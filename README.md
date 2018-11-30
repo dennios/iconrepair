@@ -18,5 +18,5 @@ Features
   Ability to quickly restart Windows Explorer or cancel planned shutdown from Windows and more.
  
  
-Converted by Bat To Exe Converter by F2KO Software: http://www.f2ko.de/de/b2e.php
+Converted by Bat To Exe Converter by F2KO Software: http://www.f2ko.de/de/b2e.php .
 I am the creator of the application but I do not own the application icon!
