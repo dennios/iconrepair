@@ -6,13 +6,13 @@ Made for Windows 7-10.
 Features
 
 >IconRepair:
-  IconRepair fixes invisible icons on the desktop and in the taskbar by renewing the icon cache.
+  Tries to fix invisible icons on the desktop and in the taskbar by renewing the icon cache.
 
 >NetworkRepair:
-  NetworkRepair fixes network disconnections by renewing the network connection.
+  Tries to fix network disconnections by renewing the network connection.
 
 >AudioRepair:
-  AudioRepair fixes audio problems by restarting audio drivers.
+  Tries to fix audio problems by restarting audio drivers.
 
 >System options:
   Ability to quickly restart Windows Explorer or cancel planned shutdown from Windows and more.
