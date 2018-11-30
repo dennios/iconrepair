@@ -1,7 +1,7 @@
 # IconRepair
 Official IconRepair for Windows.
 Made for Windows 7-10.
-
+ETA soon.
 
 Features
 
