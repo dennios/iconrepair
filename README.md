@@ -1,7 +1,7 @@
 # IconRepair
 Official IconRepair for Windows.
 Made for Windows 7-10.
-ETA soon.
+Languages: English, German
 
 Features
 
@@ -12,7 +12,7 @@ Features
   Tries to fix network disconnections by renewing the network connection.
 
 >AudioRepair:
-  Tries to fix audio problems by restarting audio drivers.
+  Tries to fix audio problems by restarting all audio drivers.
 
 >System options:
   Ability to quickly restart Windows Explorer or cancel planned shutdown from Windows and more.
@@ -20,4 +20,6 @@ Features
  
 Converted by Bat To Exe Converter by F2KO Software: http://www.f2ko.de/de/b2e.php
 
-I am the creator of the application but I do not own the application icon!
+I am the creator of the script but I do not own the application icon!
+
+More information soon.
