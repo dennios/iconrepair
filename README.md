@@ -19,7 +19,7 @@ Features
  
 Releases: https://github.com/dennios/iconrepair/releases
 
-Converted by Bat To Exe Converter by F2KO Software: http://www.f2ko.de/de/b2e.php
+Converted with Bat To Exe Converter by F2KO Software: http://www.f2ko.de/de/b2e.php
 
 I am the creator of the script but I do not own the application icon!
 
