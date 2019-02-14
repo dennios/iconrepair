@@ -1,4 +1,4 @@
-@echo off&mode con:cols=79 lines=26&set V=3.1&set B=3102&set RU=2.2&set year=2018
+@echo off&mode con:cols=79 lines=26&set V=3.1&set B=3111&set RU=2.2&set year=2019
 set N=echo __________________________________________________________&set M=echo.&set R=title IconRepair %V%&set update=&set up=&set ton=Default
 %R%&%M%&echo Loading...&%M%
 for /F "tokens=1,2 delims=#" %%a in ('"prompt #$H#$E# & echo on & for %%b in (1) do rem"') do (set "DEL=%%a")
@@ -41,7 +41,7 @@ choice /C O%ext% /N >NUL
 if %errorlevel% equ 1 goto o
 if %errorlevel% equ 2 goto DEE
 :l
-cls&echo ^> Changelog&%M%&echo Version %V%&echo  +Public release&echo  +Improvements&echo  +Fixes&%N%&%M%&echo %back% - %exit%
+cls&echo ^> Changelog&%M%&echo Version %V% (%B%)&echo  +Experimental options&echo  +Fixes&%N%&%M%&echo %back% - %exit%
 choice /C %bck%L%ext% /N >NUL
 if %errorlevel% equ 1 goto about
 if %errorlevel% equ 2 goto about
@@ -62,26 +62,24 @@ if /I "%cf%" neq "Enabled" (if "%cf%"=="Aktiviert" (set cf=Enabled) else (set cf
 if /I "%udc%" neq "Enabled" (if "%udc%"=="Aktiviert" (set udc=Enabled) else (set udc=Disabled))
 if /I "%adc%" neq "Disabled" (if "%adc%"=="Deaktiviert" (set adc=Disabled) else (set adc=Enabled))
 if /I "%ton%" equ "Standard" (set ton=Default) else (if "%ton%"=="Deaktiviert" (set ton=Disabled) else (if "%ton%"=="Aktiviert" (set ton=Enabled)))
-if %so%==Enabled (if exist %userprofile%\IconRepair\options.cmd (echo set so=%so%>%userprofile%\IconRepair\options.cmd&echo set lang=%lang%>>%userprofile%\IconRepair\options.cmd&echo set winver=%winver%>>%userprofile%\IconRepair\options.cmd&echo set adc=%adc%>>%userprofile%\IconRepair\options.cmd&echo set udc=%udc%>>%userprofile%\IconRepair\options.cmd&echo set cf=%cf%>>%userprofile%\IconRepair\options.cmd&echo set ton=%ton%>>%userprofile%\IconRepair\options.cmd) else (goto CTE))
-if %so%==Disabled (set re=&set opr=) else set "opr=- Reset (r)"
+if /I "%echoon%" neq "Enabled" (if "%echoon%"=="Aktiviert" (set echoon=Enabled) else (set echoon=Disabled))
+if %so%==Enabled (if not exist "%userprofile%\IconRepair\options.cmd" (echo. >%userprofile%\IconRepair\options.cmd) else (if exist %userprofile%\IconRepair\options.cmd (echo set so=%so%>%userprofile%\IconRepair\options.cmd&echo set lang=%lang%>>%userprofile%\IconRepair\options.cmd&echo set winver=%winver%>>%userprofile%\IconRepair\options.cmd&echo set adc=%adc%>>%userprofile%\IconRepair\options.cmd&echo set udc=%udc%>>%userprofile%\IconRepair\options.cmd&echo set cf=%cf%>>%userprofile%\IconRepair\options.cmd&echo set ton=%ton%>>%userprofile%\IconRepair\options.cmd) else (goto CTE)))
+if %so%==Disabled (set re=&set opr=) else (set set re=R&"opr=- Reset (r)")
 if "%opr%"=="" (if %cf%==Disabled (set re=&set opr=) else set re=R&set "opr=- Reset (r)")
-if "%opr%"=="" (if %udc%==Enabled (set re=&set opr= ) else set re=R&set "opr=- Reset (r)")
 if "%opr%"=="" (if %adc%==Enabled (set re=&set opr=) else set re=R&set "opr=- Reset (r)")
-if "%opr%"=="" (if %ton%==Default (set re=&set opr=) else set re=R&set "opr=- Reset (r)")
 cls&echo ^> Options - Check for updates (u) %opr%
 %M%&echo Press the number of your choice to change options.&%N%&%M%&%M%
 if %cf%==Enabled goto ENocf
-echo  1 ^> Save settings             - %so%&echo  2 ^> Language                  - %lang%&echo  3 ^> Windows version           - %L%&echo  4 ^> Administrator check       - %adc%&echo  5 ^> Auto update check         - %udc%&echo  6 ^> Colored font              - %cf%&echo  7 ^> Sound                     - %ton%&goto ENocf1
+echo  1 ^> Save settings             - %so%&echo  2 ^> Language                  - %lang%&echo  3 ^> Windows version           - %L%&echo  4 ^> Administrator check       - %adc%&echo  5 ^> Colored font              - %cf%&echo  6 ^> Experimental options&goto ENocf1
 :ENocf
 call :CT 07 " 1. Save settings             -"&if %so%==Enabled (call :CT 0a " Enabled"&%M%) else (call :CT 0C " Disabled"&%M%)
-call :CT 07 " 2. Language                  - %lang%"&%M%&call :CT 07 "3. Windows version           - %L%"&%M%
+call :CT 07 " 2. Language                  - %lang%"&%M%&call :CT 07 " 3. Windows version           - %L%"&%M%
 call :CT 07 " 4. Administrator check       -"&if %adc%==Enabled (call :CT 0a " Enabled"&%M%) else (call :CT 0C " Disabled"&%M%)
-call :CT 07 " 5. Auto update check         -"&if %udc%==Enabled (call :CT 0a " Enabled"&%M%) else (call :CT 0C " Disabled"&%M%)
-call :CT 07 " 6. Colored font              -"&if %cf%==Enabled (call :CT 0a " Enabled"&%M%) else (call :CT 0C " Disabled"&%M%)
-call :CT 07 " 7. Sound                     -"&if %ton%==Default (call :CT 0a " Default"&%M%) else (if %ton%==Enabled (call :CT 0a " Enabled"&%M%) else (call :CT 0C " Disabled"&%M%))
+call :CT 07 " 5. Colored font              -"&if %cf%==Enabled (call :CT 0a " Enabled"&%M%) else (call :CT 0C " Disabled"&%M%)
+call :CT 07 " 6. Experimental options"&%M%
 :ENocf1
 %M%&%N%&%M%&echo %back% - %exit%
-choice /C %bck%O%ext%1234567U%re% /N >NUL
+choice /C %bck%O%ext%123456U%re% /N >NUL
 if %errorlevel% equ 1 if "%ob%"=="s" (goto ENS) else (if "%ob%"=="s3" (goto ENS3) else (if "%ob%"=="s4a" (goto ENS4a) else (goto b)))
 if %errorlevel% equ 2 if "%ob%"=="s" (goto ENS) else (if "%ob%"=="s3" (goto ENS3) else (if "%ob%"=="s4a" (goto ENS4a) else (goto b)))
 if %errorlevel% equ 3 goto ENE
@@ -89,11 +87,32 @@ if %errorlevel% equ 4 goto ENso
 if %errorlevel% equ 5 if %lang%==Deutsch (set lang=English&goto o) else (set lang=Deutsch&goto o)
 if %errorlevel% equ 6 goto ENwinvero
 if %errorlevel% equ 7 goto ENadc
-if %errorlevel% equ 8 if %udc%==Enabled (set udc=Disabled&set update=&set up=&goto o) else (set udc=Enabled&set np=&goto o)
-if %errorlevel% equ 9 if %cf%==Enabled (set cf=Disabled&goto o) else (set cf=Enabled&goto o)
-if %errorlevel% equ 10 goto ENton
-if %errorlevel% equ 11 enus
-if %errorlevel% equ 12 goto ENr
+if %errorlevel% equ 8 if %cf%==Enabled (set cf=Disabled&goto o) else (set cf=Enabled&goto o)
+if %errorlevel% equ 9 goto ENExperimentalOptions
+if %errorlevel% equ 10 goto enus
+if %errorlevel% equ 11 goto ENr
+:ENExperimentalOptions
+if "%opr%"=="" (if %udc%==Disabled (set re=&set opr= ) else set re=R&set "opr=- Reset (r)")
+if "%opr%"=="" (if %ton%==Default (set re=&set opr=) else set re=R&set "opr=- Reset (r)")
+if "%opr%"=="" (if %echoon%==Disabled (set re=&set opr=) else set re=R&set "opr=- Zuruecksetzen (r)")
+cls&echo ^> Experimental options %opr%
+%M%&echo Press the number of your choice to change options.&%N%&%M%&%M%
+if %cf%==Enabled goto ENeocf
+echo  1 ^> Auto update check         - %udc%&echo  2 ^> Sound                     - %ton%&echo  3 ^> Echo on                   - %echoon%&goto ENeocf1
+:ENeocf
+call :CT 07 " 1. Auto update check         -"&if %udc%==Enabled (call :CT 0C " Enabled"&%M%) else (call :CT 0a " Disabled"&%M%)
+call :CT 07 " 2. Sound                     -"&if %ton%==Default (call :CT 0a " Default"&%M%) else (if %ton%==Enabled (call :CT 0a " Enabled"&%M%) else (call :CT 0C " Disabled"&%M%))
+call :CT 07 " 3. Echo on                   -"&if %echoon%==Enabled (call :CT 0C " Enabled"&%M%) else (call :CT 0a " Disabled"&%M%)
+:ENeocf1
+%M%&%N%&%M%&echo %back% - %exit%
+choice /C %bck%8%ext%123%re% /N >NUL
+if %errorlevel% equ 1 goto ENo
+if %errorlevel% equ 2 goto ENo
+if %errorlevel% equ 3 goto ENE
+if %errorlevel% equ 4 if %udc%==Enabled (set udc=Disabled&set update=&set up=&goto ENExperimentalOptions) else (set udc=Enabled&set np=&goto ENExperimentalOptions)
+if %errorlevel% equ 5 goto ENton
+if %errorlevel% equ 6 if %echoon%==Enabled (@echo off&set echoon=Disabled&goto ENExperimentalOptions) else (@echo on&set echoon=Enabled&goto ENExperimentalOptions)
+if %errorlevel% equ 7 goto DEr
 :enus
 ping -n 1 -l 0 -w 1 github.com >NUL
 if %errorlevel% equ 0 (set np=1) else (set np=0&cls&%M%&echo Error!&timeout 2&goto o)
@@ -156,6 +175,7 @@ if %errorlevel% equ 2 goto o
 if %errorlevel% equ 3 goto ENE
 :ENso
 if %so%==Enabled (goto ENsoda) else (set so=Enabled&if not exist "%userprofile%\IconRepair\" (mkdir %userprofile%\IconRepair\))
+if not exist "%userprofile%\IconRepair\options.cmd" (echo >%userprofile%\IconRepair\options.cmd)
 if not exist "%userprofile%\IconRepair\options.cmd" (goto CTE)
 goto o
 :ENsoda
@@ -175,26 +195,24 @@ if /I "%cf%" neq "Aktiviert" (if "%cf%"=="Enabled" (set cf=Aktiviert) else (set 
 if /I "%udc%" neq "Aktiviert" (if "%udc%"=="Enabled" (set udc=Aktiviert) else (set udc=Deaktiviert))
 if /I "%adc%" neq "Deaktiviert" (if "%adc%"=="Disabled" (set adc=Deaktiviert) else (set adc=Aktiviert))
 if /I "%ton%" equ "Default" (set ton=Standard) else (if "%ton%"=="Disabled" (set ton=Deaktiviert) else (if "%ton%"=="Enabled" (set ton=Aktiviert)))
-if %so%==Aktiviert (if exist "%userprofile%\IconRepair\options.cmd" (echo set so=%so%>%userprofile%\IconRepair\options.cmd&echo set lang=%lang%>>%userprofile%\IconRepair\options.cmd&echo set winver=%winver%>>%userprofile%\IconRepair\options.cmd&echo set adc=%adc%>>%userprofile%\IconRepair\options.cmd&echo set udc=%udc%>>%userprofile%\IconRepair\options.cmd&echo set cf=%cf%>>%userprofile%\IconRepair\options.cmd&echo set ton=%ton%>>%userprofile%\IconRepair\options.cmd) else (goto CTE))
-if %so%==Deaktiviert (set re=&set opr=) else set re=R&set "opr=- Zuruecksetzen (r)"
+if /I "%echoon%" neq "Aktiviert" (if "%echoon%"=="Enabled" (set echoon=Aktiviert) else (set echoon=Deaktiviert))
+if %so%==Aktiviert (if not exist "%userprofile%\IconRepair\options.cmd" (echo. >%userprofile%\IconRepair\options.cmd) else (if exist "%userprofile%\IconRepair\options.cmd" (echo set so=%so%>%userprofile%\IconRepair\options.cmd&echo set lang=%lang%>>%userprofile%\IconRepair\options.cmd&echo set winver=%winver%>>%userprofile%\IconRepair\options.cmd&echo set adc=%adc%>>%userprofile%\IconRepair\options.cmd&echo set udc=%udc%>>%userprofile%\IconRepair\options.cmd&echo set cf=%cf%>>%userprofile%\IconRepair\options.cmd&echo set ton=%ton%>>%userprofile%\IconRepair\options.cmd) else (goto CTE)))
+if %so%==Deaktiviert (set re=&set opr=) else (set re=R&set "opr=- Zuruecksetzen (r)")
 if "%opr%"=="" (if %cf%==Deaktiviert (set re=&set opr=) else set re=R&set "opr=- Zuruecksetzen (r)")
-if "%opr%"=="" (if %udc%==Aktiviert (set re=&set opr=) else set re=R&set "opr=- Zuruecksetzen (r)")
 if "%opr%"=="" (if %adc%==Aktiviert (set re=&set opr=) else set re=R&set "opr=- Zuruecksetzen (r)")
-if "%opr%"=="" (if %ton%==Standard (set re=&set opr=) else set re=R&set "opr=- Zuruecksetzen (r)")
 cls&echo ^> Optionen - Nach Updates suchen (u) %opr%
 %M%&echo Druecke die Nummer deiner Auswahl um Optionen zu aendern.&%N%&%M%&%M%
 if %cf%==Aktiviert goto DEocf
-echo  1 ^> Einstellungen speichern   - %so%&echo  2 ^> Sprache                   - %lang%&echo  3 ^> Windows Version           - %L%&echo  4 ^> Administrator check       - %adc%&echo  5 ^> Auto Update check         - %udc%&echo  6 ^> Farbige Schrift           - %cf%&echo  7 ^> Ton                       - %ton%&goto DEocf1
+echo  1 ^> Einstellungen speichern   - %so%&echo  2 ^> Sprache                   - %lang%&echo  3 ^> Windows Version           - %L%&echo  4 ^> Administrator check       - %adc%&echo  5 ^> Farbige Schrift           - %cf%&echo  6 ^> Experimentelle Optionen&goto DEocf1
 :DEocf
 call :CT 07 " 1. Einstellungen speichern   -"&if %so%==Aktiviert (call :CT 0a " Aktiviert"&%M%) else (call :CT 0C " Deaktiviert"&%M%)
 call :CT 07 " 2. Sprache                   - %lang%"&%M%&call :CT 07 " 3. Windows Version           - %L%"&%M%
 call :CT 07 " 4. Administrator check       -"&if %adc%==Aktiviert (call :CT 0a " Aktiviert"&%M%) else (call :CT 0C " Deaktiviert"&%M%)
-call :CT 07 " 5. Auto Update check         -"&if %udc%==Aktiviert (call :CT 0a " Aktiviert"&%M%) else (call :CT 0C " Deaktiviert"&%M%)
-call :CT 07 " 6. Farbige Schrift           -"&if %cf%==Aktiviert (call :CT 0a " Aktiviert"&%M%) else (call :CT 0C " Deaktiviert"&%M%)
-call :CT 07 " 7. Ton                       -"&if %ton%==Standard (call :CT 0a " Standard"&%M%) else (if %ton%==Aktiviert (call :CT 0a " Aktiviert"&%M%) else (call :CT 0C " Deaktiviert"&%M%))
+call :CT 07 " 5. Farbige Schrift           -"&if %cf%==Aktiviert (call :CT 0a " Aktiviert"&%M%) else (call :CT 0C " Deaktiviert"&%M%)
+call :CT 07 " 6. Experimentelle Optionen"&%M%
 :DEocf1
 %M%&%N%&%M%&echo %back% - %exit%
-choice /C %bck%O%ext%1234567U%re% /N >NUL
+choice /C %bck%O%ext%123456U%re% /N >NUL
 if %errorlevel% equ 1 if "%ob%"=="s" (goto DES) else (if "%ob%"=="s3" (goto DES3) else (if "%ob%"=="s4a" (goto DES4a) else (goto b)))
 if %errorlevel% equ 2 if "%ob%"=="s" (goto DES) else (if "%ob%"=="s3" (goto DES3) else (if "%ob%"=="s4a" (goto DES4a) else (goto b)))
 if %errorlevel% equ 3 goto DEE
@@ -202,11 +220,31 @@ if %errorlevel% equ 4 goto DEso
 if %errorlevel% equ 5 if %lang%==Deutsch (set lang=English&goto o) else (set lang=Deutsch&goto o)
 if %errorlevel% equ 6 goto DEwinvero
 if %errorlevel% equ 7 goto DEadc
-if %errorlevel% equ 8 if %udc%==Aktiviert (set udc=Deaktiviert&set update=&set up=&goto o) else (set udc=Aktiviert&set np=&goto o)
-if %errorlevel% equ 9 if %cf%==Aktiviert (set cf=Deaktiviert&goto o) else (set cf=Aktiviert&goto o)
-if %errorlevel% equ 10 goto DEton
-if %errorlevel% equ 11 goto deus
-if %errorlevel% equ 12 goto DEr
+if %errorlevel% equ 8 if %cf%==Aktiviert (set cf=Deaktiviert&goto o) else (set cf=Aktiviert&goto o)
+if %errorlevel% equ 9 goto DEExperimentalOptions
+if %errorlevel% equ 10 goto DEr
+:DEExperimentalOptions
+if "%opr%"=="" (if %udc%==Deaktiviert (set re=&set opr=) else set re=R&set "opr=- Zuruecksetzen (r)")
+if "%opr%"=="" (if %ton%==Standard (set re=&set opr=) else set re=R&set "opr=- Zuruecksetzen (r)")
+if "%opr%"=="" (if %echoon%==Deaktiviert (set re=&set opr=) else set re=R&set "opr=- Zuruecksetzen (r)")
+cls&echo ^> Experimentelle Optionen %opr%
+%M%&echo Druecke die Nummer deiner Auswahl um Optionen zu aendern.&%N%&%M%&%M%
+if %cf%==Aktiviert goto DEeocf
+echo  1 ^> Auto Update check         - %udc%&echo  2 ^> Ton                       - %ton%&echo  3 ^> Echo on                   - %echoon%&goto DEeocf1
+:DEeocf
+call :CT 07 " 1. Auto Update check         -"&if %udc%==Aktiviert (call :CT 0C " Aktiviert"&%M%) else (call :CT 0a " Deaktiviert"&%M%)
+call :CT 07 " 2. Ton                       -"&if %ton%==Standard (call :CT 0a " Standard"&%M%) else (if %ton%==Aktiviert (call :CT 0a " Aktiviert"&%M%) else (call :CT 0C " Deaktiviert"&%M%))
+call :CT 07 " 3. Echo on                   -"&if %echoon%==Aktiviert (call :CT 0C " Aktiviert"&%M%) else (call :CT 0a " Deaktiviert"&%M%)
+:DEeocf1
+%M%&%N%&%M%&echo %back% - %exit%
+choice /C %bck%8%ext%123%re% /N >NUL
+if %errorlevel% equ 1 goto DEo
+if %errorlevel% equ 2 goto DEo
+if %errorlevel% equ 3 goto DEE
+if %errorlevel% equ 4 if %udc%==Aktiviert (set udc=Deaktiviert&set update=&set up=&goto DEExperimentalOptions) else (set udc=Aktiviert&set np=&goto DEExperimentalOptions)
+if %errorlevel% equ 5 goto DEton
+if %errorlevel% equ 6 if %echoon%==Aktiviert (@echo off&set echoon=Deaktiviert&goto DEExperimentalOptions) else (@echo on&set echoon=Aktiviert&goto DEExperimentalOptions)
+if %errorlevel% equ 7 goto DEr
 :deus
 ping -n 1 -l 0 -w 1 github.com >NUL
 if %errorlevel% equ 0 (set np=1) else (set np=0&cls&%M%&echo Error!&timeout 2&goto o)
@@ -269,6 +307,7 @@ if %errorlevel% equ 2 goto o
 if %errorlevel% equ 3 goto DEE
 :DEso
 if %so%==Aktiviert (goto DEsoda) else (set so=Aktiviert&if not exist "%userprofile%\IconRepair\" (mkdir %userprofile%\IconRepair\))
+if not exist "%userprofile%\IconRepair\options.cmd" (echo >%userprofile%\IconRepair\options.cmd)
 if not exist "%userprofile%\IconRepair\options.cmd" (goto CTE)
 goto o
 :DEsoda
