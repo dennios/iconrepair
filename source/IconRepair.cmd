@@ -1,4 +1,4 @@
-@echo off&mode con:cols=79 lines=26&set V=3.1&set B=3111&set RU=2.2&set year=2019
+@echo off&mode con:cols=79 lines=26&set V=3.1&set B=3112&set RU=2.2&set year=2019
 set N=echo __________________________________________________________&set M=echo.&set R=title IconRepair %V%&set update=&set up=&set ton=Default
 %R%&%M%&echo Loading...&%M%
 for /F "tokens=1,2 delims=#" %%a in ('"prompt #$H#$E# & echo on & for %%b in (1) do rem"') do (set "DEL=%%a")
@@ -222,7 +222,8 @@ if %errorlevel% equ 6 goto DEwinvero
 if %errorlevel% equ 7 goto DEadc
 if %errorlevel% equ 8 if %cf%==Aktiviert (set cf=Deaktiviert&goto o) else (set cf=Aktiviert&goto o)
 if %errorlevel% equ 9 goto DEExperimentalOptions
-if %errorlevel% equ 10 goto DEr
+if %errorlevel% equ 10 goto deus
+if %errorlevel% equ 11 goto DEr
 :DEExperimentalOptions
 if "%opr%"=="" (if %udc%==Deaktiviert (set re=&set opr=) else set re=R&set "opr=- Zuruecksetzen (r)")
 if "%opr%"=="" (if %ton%==Standard (set re=&set opr=) else set re=R&set "opr=- Zuruecksetzen (r)")
