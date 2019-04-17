@@ -1,3 +1,10 @@
+Version 3.2 (3205)
+ +New feature: Delete downloaded Windows update
+ +Improvements to AudioRepair and UI
+ +Better updates check
+ +Cleaner code
+ +Fixes
+
 Version 3.1 (3112)
  +Fix update
  
