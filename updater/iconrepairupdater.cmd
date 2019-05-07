@@ -8,7 +8,6 @@ if "%new%"=="new" (if "%V% (%B%)"=="%NB%" (exit /b) else (goto UpdateMain)) else
 title %name% %UV%
 if "%language%"=="Deutsch" (goto DEUMain) else (goto ENUMain)
 :ENUMain
-pause
 cls&echo ^>Update&%US%&echo Update IconRepair to the latest version?&%UL%&%US%&%US%&echo  Installed version         - %V% (%B%)&echo  Latest version            - %NB%&%US%&%UL%&%US%&echo Yes (y) - No (n)
 choice /C YN /N >NUL
 if %errorlevel% equ 1 goto Uprepare
