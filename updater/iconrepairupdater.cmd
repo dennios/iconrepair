@@ -1,9 +1,8 @@
 @echo off&set name=IconRepairUpdater&set UV=2.4
-if not exist "%userprofile%\IconRepair\" (exit /b)
 if not exist "%userprofile%\IconRepair\build" (exit /b)
 set /p NB=<"%userprofile%\IconRepair\build"
 set UL=echo ___________________________________________________________&set US=echo:
-if "%new%"=="new" (if "%V% (%B%)"=="%NB%" (exit /b) else (goto UpdateMain)) else (goto Uset)
+if "%new%"=="new" (if "%V% (%B%)"=="%NB%" (exit /b)) else (goto Uset)
 :UpdateMain
 title %name% %UV%
 if "%language%"=="Deutsch" (goto DEUMain) else (goto ENUMain)
@@ -13,22 +12,21 @@ choice /C YN /N >NUL
 if %errorlevel% equ 1 goto Uprepare
 if %errorlevel% equ 2 set up=U&set update= - Update (u)&exit /b
 :DEUMain
-cls&echo ^>Update&%US%&echo IconRepair auf die neueste Version updaten?&%UL%&%US%&%US%&echo  Installierte Version      - %V% (%B%)&echo  Neuste Version            - %NB%&%US%&%UL%&%US%&echo Ja (j) - Nein (n)
+cls&echo ^>Update&%US%&echo IconRepair auf die neueste Version updaten?&%UL%&%US%&%US%&echo  Installierte Version      - %V% (%B%)&echo  Neueste Version           - %NB%&%US%&%UL%&%US%&echo Ja (j) - Nein (n)
 choice /C JN /N >NUL
 if %errorlevel% equ 1 goto Uprepare
 if %errorlevel% equ 2 set up=U&set update= - Update (u)&exit /b
 :Uprepare
 cls&%US%&if "%language%"=="Deutsch" (echo Bitte warten...) else (echo Please wait...)
-echo true>"%userprofile%\IconRepair\update"
-set new=
-start "" "%userprofile%\IconRepair\iconrepairupdater.cmd"&exit
+%UL%&echo >"%userprofile%\IconRepair\update"
+set new=&start "" "%userprofile%\IconRepair\iconrepairupdater.cmd"&exit
 :Uset
 mode 79,26&title %name% %UV%
-if not exist "%userprofile%\IconRepair\update" (cls&%US%&echo Error!&timeout 2 >NUL&exit)
+if not exist "%userprofile%\IconRepair\update" (cls&%US%&echo Error!&%UL%&timeout 2 >NUL&exit)
 :Uload
 cls&%US%&if "%language%"=="Deutsch" (echo Lade Update...) else (echo Loading update...)
-if not exist "%userprofile%\IconRepair\loc.txt" (cls&%US%&echo Error!&timeout 2 >NUL&exit)
-if not exist "%userprofile%\IconRepair\name.txt" (cls&%US%&echo Error!&timeout 2 >NUL&exit)
+%UL%&if not exist "%userprofile%\IconRepair\loc.txt" (cls&%US%&echo Error!&%UL%&timeout 2 >NUL&%UL%&exit)
+if not exist "%userprofile%\IconRepair\name.txt" (cls&%US%&echo Error!&%UL%&timeout 2 >NUL&exit)
 set /p loc=<"%userprofile%\IconRepair\loc.txt"
 set /p IRN=<"%userprofile%\IconRepair\name.txt"
 tasklist /FI "ImageName eq %IRN%" >NUL | find /i "%IRN%" >NUL
@@ -52,12 +50,12 @@ if %errorlevel% equ 2 exit
 :URetry
 if "%language%"=="Deutsch" (goto DEURetry) else (goto ENURetry)
 :ENURetry
-cls&echo ^>Update&%US%&echo An error has occurred :(&echo Please close all IconRepair processes&echo and try it again!&%UL%&%US%&echo Try again (t) - Exit (e)
-choice /C TE /N >NUL
+cls&echo ^>Update&%US%&echo An error has occurred :(&echo Please close all IconRepair processes&echo and try it again!&%UL%&%US%&echo Retry (r) - Exit (e)
+choice /C RE /N >NUL
 if %errorlevel% equ 1 goto Uload
 if %errorlevel% equ 2 exit
 :DEURetry
-cls&echo ^>Update&%US%&echo Es ist ein Fehler aufgetreten :(&echo Bitte beende alle IconRepair Prozesse&echo und versuche es erneut!&%UL%&%US%&echo Erneut versuchen (e) - Beenden (b)
-choice /C EB /N >NUL
+cls&echo ^>Update&%US%&echo Es ist ein Fehler aufgetreten :(&echo Bitte beende alle IconRepair Prozesse&echo und versuche es erneut!&%UL%&%US%&echo Wiederholen (w) - Beenden (b)
+choice /C WB /N >NUL
 if %errorlevel% equ 1 goto Uload
 if %errorlevel% equ 2 exit
