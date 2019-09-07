@@ -1,3 +1,9 @@
+Version 3.3 (3313)
+ +Old AudioRepair as alternative
+ +Reload script button in about
+ +Better loading progress
+ +Improvements
+
 Version 3.3 (3303)
  +New better & faster AudioRepair
  +Renamed "Options" to "Settings"
