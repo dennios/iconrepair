@@ -1,18 +1,17 @@
-@echo off&mode 79,26&set V=3.3&set B=3303&set RU=2.5&set year=2019&pushd "%userprofile%"&set "settingspath="%userprofile%\IconRepair\settings.cmd""
+@echo off&mode 79,26&set V=3.3&set B=3313&set RU=2.5&set year=2019&pushd "%userprofile%"&set "settingspath="%userprofile%\IconRepair\settings.cmd""
 set L=echo ____________________________________________________________&set S=echo:&set R=title IconRepair %V%&set update=&set up=
-%R%&%S%&echo Loading...&%S%
+:reload
 for /F "tokens=1,2 delims=#" %%a in ('"prompt #$H#$E# & echo on & for %%b in (1) do rem"') do (set "DEL=%%a")
-if exist IconRepair\options.cmd (copy IconRepair\options.cmd %settingspath% >NUL&del IconRepair\options.cmd)
 if exist %settingspath% (call %settingspath%)
-if "%savesettings%"=="" (if "%saveoptions%"=="" (set savesettings=Disabled) else (set savesettings=Enabled))
+if "%savesettings%"=="" (set savesettings=Disabled)
 if "%udc%"=="" (set udc=Disabled)
 if "%coloredfont%"=="" (set coloredfont=Disabled)
 if "%echoon%"=="" (set echoon=Disabled)
 if "%sound%"=="" (set sound=Default)
 if "%adc%"=="" (set adc=Enabled)
 if not "%language%"=="Deutsch" (set language=English)
-if %savesettings%==Enabled (if not %sound%==Default (for /F "tokens=3 delims=: " %%H in ('sc query "beep" ^| findstr "        STATE"') do (if not "%%H"=="RUNNING" (set sound=Enabled) else (set sound=Disabled))))
-if %savesettings%==Aktiviert (if not %sound%==Standard (for /F "tokens=3 delims=: " %%H in ('sc query "beep" ^| findstr "        STATE"') do (if not "%%H"=="RUNNING" (set sound=Aktiviert) else (set sound=Deaktiviert))))
+if %savesettings%==Enabled (if not %sound%==Default (%S%&echo Checking sound process...&%S%&for /F "tokens=3 delims=: " %%H in ('sc query "beep" ^| findstr "        STATE"') do (if not "%%H"=="RUNNING" (set sound=Enabled) else (set sound=Disabled))))
+if %savesettings%==Aktiviert (if not %sound%==Standard (%S%&echo Teste Soundprozess...&%S%&for /F "tokens=3 delims=: " %%H in ('sc query "beep" ^| findstr "        STATE"') do (if not "%%H"=="RUNNING" (set sound=Aktiviert) else (set sound=Deaktiviert))))
 if %savesettings%==Aktiviert (if not "%winver%"=="" (goto Main)) else (if %savesettings%==Enabled (if not "%winver%"=="" (goto Main)))
 for /f "tokens=4-7 delims=[.] " %%i in ('ver') do (if %%i==Version (set winver=%%j.%%k) else (set winver=%%i.%%j))
 for /f "tokens=3 delims= " %%l in ('reg query "hklm\system\controlset001\control\nls\language" /v Installlanguage') do (if [%%l] equ [0407] (set language=Deutsch) else (set language=English))
@@ -38,38 +37,39 @@ if %errorlevel% equ 1 goto settings
 if %errorlevel% equ 2 goto end
 :update
 if not "%lastloc%"=="Main" (cls&%S%)
-if %language%==Deutsch (echo Suche nach Updates...) else (echo Checking for updates...)
+if %language%==Deutsch (%S%&echo Suche nach Updates...) else (%S%&echo Checking for updates...)
 if not "%lastloc%"=="Main" (%L%)
 ping -n 1 -l 0 -w 1 github.com >NUL
 if %errorlevel% equ 0 (set np=1&goto update2)
 ping -n 1 -l 0 -w 1 github.com >NUL
-if %errorlevel% equ 0 (set np=1&goto update2) else (set np=0&cls&%S%&if %language%==Deutsch (echo Keine Verbindung!&%L%&%S%&echo Taste drcken um fortzufahren.) else (echo No connection!&%L%&%S%&echo Press key to continue.))
+if %errorlevel% equ 0 (set np=1&goto update2) else (set np=0&cls&%S%&if %language%==Deutsch (echo Keine Verbindung!&%L%&%S%&echo Eine beliebige Taste drcken, um fortzufahren) else (echo No connection!&%L%&%S%&echo Press any key to continue.))
 timeout 3 >NUL&goto %updateloc%
 :update2
 if not exist "%userprofile%\IconRepair\" (mkdir "%userprofile%\IconRepair\")
 %S%&powershell.exe -c (invoke-webrequest -ContentType "application/octet-stream" 'https://raw.githubusercontent.com/dennios/iconrepair/master/updater/build' -outfile '%userprofile%\IconRepair\build' -timeoutsec 3 -usebasicparsing)
-if %errorlevel% neq 0 (cls&%S%&if %language%==Deutsch (echo Download fehlgeschlagen!&%L%&%S%&echo Taste drcken um fortzufahren.&timeout 3 >NUL&goto %updateloc%) else (echo Download failed!&%L%&%S%&echo Press key to continue.&timeout 3 >NUL&goto %updateloc%))
+if %errorlevel% neq 0 (cls&%S%&if %language%==Deutsch (echo Download fehlgeschlagen!&%L%&%S%&echo Eine beliebige Taste drcken, um fortzufahren&timeout 3 >NUL&goto %updateloc%) else (echo Download failed!&%L%&%S%&echo Press any key to continue.&timeout 3 >NUL&goto %updateloc%))
 set /p NB=<%userprofile%\IconRepair\build
-if "%V% (%B%)"=="%NB%" (cls&%S%&if %language%==Deutsch (echo Keine Updates verfgbar!&%L%&%S%&echo Taste drcken um fortzufahren.&timeout 3 >NUL&goto %updateloc%) else (echo No updates available!&%L%&%S%&echo Press key to continue.&timeout 3 >NUL&goto %updateloc%))
+if "%V% (%B%)"=="%NB%" (cls&%S%&if %language%==Deutsch (echo Keine Updates verfgbar!&%L%&%S%&echo Eine beliebige Taste drcken, um fortzufahren&timeout 3 >NUL&goto %updateloc%) else (echo No updates available!&%L%&%S%&echo Press any key to continue.&timeout 3 >NUL&goto %updateloc%))
 set new=new
 echo %~dpnx0>"%userprofile%\IconRepair\loc.txt"
 echo %~nx0>"%userprofile%\IconRepair\name.txt"
 cls&%S%&if %language%==Deutsch (echo Updater herunterladen...) else (echo Downloading updater...)
 %S%&powershell.exe -c (invoke-webrequest -ContentType "application/octet-stream" 'https://raw.githubusercontent.com/dennios/iconrepair/master/updater/iconrepairupdater.cmd' -outfile '%userprofile%\IconRepair\iconrepairupdater.cmd' -timeoutsec 3 -usebasicparsing)
-if %errorlevel% neq 0 (cls&%S%&if %language%==Deutsch (echo Download fehlgeschlagen!&%L%&%S%&echo Taste drcken um fortzufahren.&timeout 3 >NUL&goto %updateloc%) else (echo Download failed!&%L%&%S%&echo Press key to continue.&timeout 3 >NUL&goto %updateloc%))
+if %errorlevel% neq 0 (cls&%S%&if %language%==Deutsch (echo Download fehlgeschlagen!&%L%&%S%&echo Eine beliebige Taste drcken, um fortzufahren&timeout 3 >NUL&goto %updateloc%) else (echo Download failed!&%L%&%S%&echo Press any key to continue.&timeout 3 >NUL&goto %updateloc%))
 if exist "%userprofile%\IconRepair\iconrepairupdater.cmd" (call "%userprofile%\IconRepair\iconrepairupdater.cmd")
 goto %updateloc%
 :update3
 if exist "%userprofile%\IconRepair\iconrepairupdater.cmd" (call "%userprofile%\IconRepair\iconrepairupdater.cmd"&if %language%==Deutsch (goto DE%lastloc%) else (goto EN%lastloc%)) else (set update=&if %language%==Deutsch (goto DE%lastloc%) else (goto EN%lastloc%))
 :about
-cls&echo ^> About - Changelog (l)&%S%&echo Version %V%&echo Build %B%&echo Re. Updater %RU%&echo Year %year%&%S%&echo by dennios&echo https://github.com/dennios/iconrepair/&%L%&%S%&echo %back% - %exit%
-choice /C %bck%AL%ext% /N >NUL
+cls&echo ^> About - Changelog (l) - Reload (r)&%S%&echo Version %V%&echo Build %B%&echo Re. Updater %RU%&echo Year %year%&%S%&echo by dennios&echo https://github.com/dennios/iconrepair/&%L%&%S%&echo %back% - %exit%
+choice /C %bck%ALR%ext% /N >NUL
 if %errorlevel% equ 1 goto Main
 if %errorlevel% equ 2 goto Main
 if %errorlevel% equ 3 goto changelog
-if %errorlevel% equ 4 goto end
+if %errorlevel% equ 4 goto reload
+if %errorlevel% equ 5 goto end
 :changelog
-cls&echo ^> Changelog&%S%&echo Version %V% (%B%)&echo  +New better ^& faster AudioRepair&echo  +Renamed "Options" to "Settings"&echo  +Admin indicator&echo  +Improvements&echo  +Fixes&%L%&%S%&echo %back% - %exit%
+cls&echo ^> Changelog&%S%&echo Version %V% (%B%)&echo  +Old AudioRepair as alternative&echo  +Reload script button in about&echo  +Better loading progress&echo  +Improvements&%S%&echo Version 3.3 (3303)&echo  +New better ^& faster AudioRepair&echo  +Renamed "Options" to "Settings"&echo  +Admin indicator&echo  +Improvements&echo  +Fixes&%L%&%S%&echo %back% - %exit%
 choice /C %bck%L%ext% /N >NUL
 if %errorlevel% equ 1 goto about
 if %errorlevel% equ 2 goto about
@@ -97,12 +97,12 @@ if %adc%==Disabled (set astat=) else (if "%admin%"=="1" (set astat=/Administrato
 cls&%R% (%win%%astat%)&echo ^> Settings - Check for updates (u) %opreset%
 %S%&echo Press the selected number to change settings.&%L%&%S%&%S%
 if %coloredfont%==Enabled goto ENsettingscoloredfont
-echo  1 ^> Save settings             - %savesettings%&echo  2 ^> Language                  - %language%&echo  3 ^> Windows version           - %win%&echo  4 ^> Administrator check       - %adc%&echo  5 ^> Colored font              - %coloredfont%&echo  6 ^> Experimental settings&goto ENsettingscoloredfont1
+echo  1 ^> Save settings                - %savesettings%&echo  2 ^> Language                     - %language%&echo  3 ^> Windows version              - %win%&echo  4 ^> Administrator check          - %adc%&echo  5 ^> Colored font                 - %coloredfont%&echo  6 ^> Experimental settings&goto ENsettingscoloredfont1
 :ENsettingscoloredfont
-call :colorfont 07 " 1. Save settings             -"&if %savesettings%==Enabled (call :colorfont 0a " Enabled"&%S%) else (call :colorfont 0C " Disabled"&%S%)
-call :colorfont 07 " 2. Language                  - %language%"&%S%&call :colorfont 07 " 3. Windows version           - %win%"&%S%
-call :colorfont 07 " 4. Administrator check       -"&if %adc%==Enabled (call :colorfont 0a " Enabled"&%S%) else (call :colorfont 0C " Disabled"&%S%)
-call :colorfont 07 " 5. Colored font              -"&if %coloredfont%==Enabled (call :colorfont 0a " Enabled"&%S%) else (call :colorfont 0C " Disabled"&%S%)
+call :colorfont 07 " 1. Save settings                -"&if %savesettings%==Enabled (call :colorfont 0a " Enabled"&%S%) else (call :colorfont 0C " Disabled"&%S%)
+call :colorfont 07 " 2. Language                     - %language%"&%S%&call :colorfont 07 " 3. Windows version              - %win%"&%S%
+call :colorfont 07 " 4. Administrator check          -"&if %adc%==Enabled (call :colorfont 0a " Enabled"&%S%) else (call :colorfont 0C " Disabled"&%S%)
+call :colorfont 07 " 5. Colored font                 -"&if %coloredfont%==Enabled (call :colorfont 0a " Enabled"&%S%) else (call :colorfont 0C " Disabled"&%S%)
 call :colorfont 07 " 6. Experimental settings"&%S%
 :ENsettingscoloredfont1
 call :writesettings
@@ -128,11 +128,11 @@ if "%opreset%"=="" (if %echoon%==Disabled (set re=&set opreset=) else (set re=R&
 cls&echo ^> Experimental settings %opreset%
 %S%&echo Press the selected number to change settings.&%L%&%S%&%S%
 if %coloredfont%==Enabled (goto ENexperimentalsettingscoloredfont)
-echo  1 ^> Auto update check         - %udc%&echo  2 ^> Sound                     - %sound%&echo  3 ^> Echo on                   - %echoon%&goto ENexperimentalsettingscoloredfont1
+echo  1 ^> Auto update check            - %udc%&echo  2 ^> Sound                        - %sound%&echo  3 ^> Echo on                      - %echoon%&goto ENexperimentalsettingscoloredfont1
 :ENexperimentalsettingscoloredfont
-call :colorfont 07 " 1. Auto update check         -"&if %udc%==Enabled (call :colorfont 0C " Enabled"&%S%) else (call :colorfont 0a " Disabled"&%S%)
-call :colorfont 07 " 2. Sound                     -"&if %sound%==Default (call :colorfont 0a " Default"&%S%) else (if %sound%==Enabled (call :colorfont 0a " Enabled"&%S%) else (call :colorfont 0C " Disabled"&%S%))
-call :colorfont 07 " 3. Echo on                   -"&if %echoon%==Enabled (call :colorfont 0C " Enabled"&%S%) else (call :colorfont 0a " Disabled"&%S%)
+call :colorfont 07 " 1. Auto update check            -"&if %udc%==Enabled (call :colorfont 0C " Enabled"&%S%) else (call :colorfont 0a " Disabled"&%S%)
+call :colorfont 07 " 2. Sound                        -"&if %sound%==Default (call :colorfont 0a " Default"&%S%) else (if %sound%==Enabled (call :colorfont 0a " Enabled"&%S%) else (call :colorfont 0C " Disabled"&%S%))
+call :colorfont 07 " 3. Echo on                      -"&if %echoon%==Enabled (call :colorfont 0C " Enabled"&%S%) else (call :colorfont 0a " Disabled"&%S%)
 :ENexperimentalsettingscoloredfont1
 call :writesettings
 %S%&%L%&%S%&echo %back% - %exit%
@@ -176,7 +176,7 @@ sc start beep >NUL
 if %errorlevel% neq 0 (goto ENsounderror)
 set sound=Enabled&goto ENexperimentalsettings
 :ENsounderror
-cls&%S%&echo Error! No permission.&%S%&echo Note: To change this setting, IconRepair must be&echo       started as administrator!&%L%&%S%&echo Press key to continue.&timeout 5 >NUL&goto settings
+cls&%S%&echo Error! No permission.&%S%&echo Note: To change this setting, IconRepair must be&echo       started as administrator!&%L%&%S%&echo Press any key to continue.&timeout 5 >NUL&goto settings
 :ENwinversion
 if "%winver%"=="10.0" (set "W10=^<---"&set W81=&set W8=&set W7=&set W1=2&set W2=3&set W3=4&set W4=)
 if "%winver%"=="6.3" (set W10=&set "W81=^<---"&set W8=&set W7=&set W1=1&set W2=3&set W3=4&set W4=)
@@ -224,12 +224,12 @@ if %adc%==Deaktiviert (set astat=) else (if "%admin%"=="1" (set astat=/Administr
 cls&%R% (%win%%astat%)&echo ^> Einstellungen - Nach Updates suchen (u) %opreset%
 %S%&echo Drcke die ausgew„hlte Nummer um Einstellungen zu „ndern.&%L%&%S%&%S%
 if %coloredfont%==Aktiviert (goto DEsettingscoloredfont)
-echo  1 ^> Einstellungen speichern   - %savesettings%&echo  2 ^> Sprache                   - %language%&echo  3 ^> Windows Version           - %win%&echo  4 ^> Administrator check       - %adc%&echo  5 ^> Farbige Schrift           - %coloredfont%&echo  6 ^> Experimentelle Einstellungen&goto DEsettingscoloredfont1
+echo  1 ^> Einstellungen speichern      - %savesettings%&echo  2 ^> Sprache                      - %language%&echo  3 ^> Windows Version              - %win%&echo  4 ^> Administrator check          - %adc%&echo  5 ^> Farbige Schrift              - %coloredfont%&echo  6 ^> Experimentelle Einstellungen&goto DEsettingscoloredfont1
 :DEsettingscoloredfont
-call :colorfont 07 " 1. Einstellungen speichern   -"&if %savesettings%==Aktiviert (call :colorfont 0a " Aktiviert"&%S%) else (call :colorfont 0C " Deaktiviert"&%S%)
-call :colorfont 07 " 2. Sprache                   - %language%"&%S%&call :colorfont 07 " 3. Windows Version           - %win%"&%S%
-call :colorfont 07 " 4. Administrator check       -"&if %adc%==Aktiviert (call :colorfont 0a " Aktiviert"&%S%) else (call :colorfont 0C " Deaktiviert"&%S%)
-call :colorfont 07 " 5. Farbige Schrift           -"&if %coloredfont%==Aktiviert (call :colorfont 0a " Aktiviert"&%S%) else (call :colorfont 0C " Deaktiviert"&%S%)
+call :colorfont 07 " 1. Einstellungen speichern      -"&if %savesettings%==Aktiviert (call :colorfont 0a " Aktiviert"&%S%) else (call :colorfont 0C " Deaktiviert"&%S%)
+call :colorfont 07 " 2. Sprache                      - %language%"&%S%&call :colorfont 07 " 3. Windows Version              - %win%"&%S%
+call :colorfont 07 " 4. Administrator check          -"&if %adc%==Aktiviert (call :colorfont 0a " Aktiviert"&%S%) else (call :colorfont 0C " Deaktiviert"&%S%)
+call :colorfont 07 " 5. Farbige Schrift              -"&if %coloredfont%==Aktiviert (call :colorfont 0a " Aktiviert"&%S%) else (call :colorfont 0C " Deaktiviert"&%S%)
 call :colorfont 07 " 6. Experimentelle Einstellungen"&%S%
 :DEsettingscoloredfont1
 call :writesettings
@@ -255,11 +255,11 @@ if "%opreset%"=="" (if %echoon%==Deaktiviert (set re=&set opreset=) else (set re
 cls&echo ^> Experimentelle Einstellungen %opreset%
 %S%&echo Drcke die ausgew„hlte Nummer um Einstellungen zu „ndern.&%L%&%S%&%S%
 if %coloredfont%==Aktiviert goto DEexperimentalsettingscoloredfont
-echo  1 ^> Auto Update check         - %udc%&echo  2 ^> Ton                       - %sound%&echo  3 ^> Echo on                   - %echoon%&goto DEexperimentalsettingscoloredfont1
+echo  1 ^> Auto Update check            - %udc%&echo  2 ^> Ton                          - %sound%&echo  3 ^> Echo on                      - %echoon%&goto DEexperimentalsettingscoloredfont1
 :DEexperimentalsettingscoloredfont
-call :colorfont 07 " 1. Auto Update check         -"&if %udc%==Aktiviert (call :colorfont 0C " Aktiviert"&%S%) else (call :colorfont 0a " Deaktiviert"&%S%)
-call :colorfont 07 " 2. Ton                       -"&if %sound%==Standard (call :colorfont 0a " Standard"&%S%) else (if %sound%==Aktiviert (call :colorfont 0a " Aktiviert"&%S%) else (call :colorfont 0C " Deaktiviert"&%S%))
-call :colorfont 07 " 3. Echo on                   -"&if %echoon%==Aktiviert (call :colorfont 0C " Aktiviert"&%S%) else (call :colorfont 0a " Deaktiviert"&%S%)
+call :colorfont 07 " 1. Auto Update check            -"&if %udc%==Aktiviert (call :colorfont 0C " Aktiviert"&%S%) else (call :colorfont 0a " Deaktiviert"&%S%)
+call :colorfont 07 " 2. Ton                          -"&if %sound%==Standard (call :colorfont 0a " Standard"&%S%) else (if %sound%==Aktiviert (call :colorfont 0a " Aktiviert"&%S%) else (call :colorfont 0C " Deaktiviert"&%S%))
+call :colorfont 07 " 3. Echo on                      -"&if %echoon%==Aktiviert (call :colorfont 0C " Aktiviert"&%S%) else (call :colorfont 0a " Deaktiviert"&%S%)
 :DEexperimentalsettingscoloredfont1
 call :writesettings
 %S%&%L%&%S%&echo %back% - %exit%
@@ -303,7 +303,7 @@ sc start beep >NUL
 if %errorlevel% neq 0 (goto DEsounderror)
 set sound=Aktiviert&goto DEexperimentalsettings
 :DEsounderror
-cls&%S%&echo Fehler! Keine Berechtigung.&%S%&echo Wichtig: Um diese Einstellung zu „ndern muss IconRepair&echo          als Administrator gestartet werden!&%L%&%S%&echo Taste drcken um fortzufahren.&timeout 5 >NUL&goto settings
+cls&%S%&echo Fehler! Keine Berechtigung.&%S%&echo Wichtig: Um diese Einstellung zu „ndern muss IconRepair&echo          als Administrator gestartet werden!&%L%&%S%&echo Eine beliebige Taste drcken, um fortzufahren&timeout 5 >NUL&goto settings
 :DEwinversion
 if "%winver%"=="10.0" (set "W10=^<---"&set W81=&set W8=&set W7=&set W1=2&set W2=3&set W3=4&set W4=)
 if "%winver%"=="6.3" (set W10=&set "W81=^<---"&set W8=&set W7=&set W1=1&set W2=3&set W3=4&set W4=)
@@ -334,7 +334,7 @@ goto settings
 :ENMain
 set lastloc=Main&set updateloc=ENMain&set settings=Settings (s)&set se=S&set back=Back (b)&set exit=Exit (e)&set yes=Yes (y)&set bck=B&set ext=E&set ys=Y&set retry=Retry (r)&set rty=R
 cls&echo About (a) - %settings%%update%
-%S%&echo Press the selected number to continue.&echo For more information press i!&%L%&%S%&%S%&echo  1 ^> IconRepair&echo  2 ^> NetworkRepair&echo  3 ^> AudioRepair&echo  4 ^> System settings&%S%&%L%&%S%&echo %exit%
+%S%&echo Press the selected number to continue.&echo For more information press i!&%L%&%S%&%S%&echo  1 ^> IconRepair&echo  2 ^> NetworkRepair&echo  3 ^> AudioRepair&echo  4 ^> System options&%S%&%L%&%S%&echo %exit%
 if %udc%==Enabled (if "%np%"=="" (goto update))
 if %adc%==Disabled (set astat=&if "%admin%"=="" (set admin=0&goto ENadmincheckdisabled) else (goto ENadmincheckdisabled)) else (if not "%admin%"=="" (goto ENadmincheckdisabled))
 net session >NUL 2>&1
@@ -352,25 +352,28 @@ if %errorlevel% equ 7 goto about
 if %errorlevel% equ 8 goto settings
 if %errorlevel% equ 9 goto update3
 :ENMinformation
-cls&echo ^> Information&%S%&echo IconRepair&echo  Tries to fix invisible icons on the desktop and in the&echo  taskbar by renewing the icon cache.&%L%&%S%&echo NetworkRepair&echo  Tries to fix network disconnections by renewing the&echo  network connection.&%L%&%S%&echo AudioRepair&echo  Tries to fix audio problems by restarting all audio&echo  drivers.&%L%&%S%&echo System settings&echo  Ability to quickly restart Windows Explorer or cancel&echo  planned shutdown from Windows and more.&%L%&%S%&echo %back% - %exit%
+cls&echo ^> Information&%S%&echo IconRepair&echo  Tries to fix invisible icons on the desktop and in the&echo  taskbar by renewing the icon cache.&%L%&%S%&echo NetworkRepair&echo  Tries to fix network disconnections by renewing the&echo  network connection.&%L%&%S%&echo AudioRepair&echo  Tries to fix audio problems by restarting all audio&echo  drivers.&%L%&%S%&echo System options&echo  Ability to quickly restart Windows Explorer or cancel&echo  planned shutdown from Windows and more.&%L%&%S%&echo %back% - %exit%
 choice /C %bck%I%ext% /N >NUL
 if %errorlevel% equ 1 goto Main
 if %errorlevel% equ 2 goto Main
 if %errorlevel% equ 3 goto end
 :ENiconrepair
-cls&%S%&echo Start IconRepair?&%L%&%S%&echo Start (s) - %back% - %exit%
-choice /C S1%bck%%ext% /N >NUL
+cls&%S%&echo Run IconRepair?&%L%&%S%&echo %yes% - %back% - %exit%
+choice /C %ys%1%bck%%ext% /N >NUL
 if %errorlevel% equ 1 if %winver%==6.1 (goto EN7iconrepair) else (goto EN10iconrepair)
 if %errorlevel% equ 2 if %winver%==6.1 (goto EN7iconrepair) else (goto EN10iconrepair)
 if %errorlevel% equ 3 goto ENMain
 if %errorlevel% equ 4 goto end
 :EN10iconrepair
+cls&%S%&echo Stopping explorer.exe...&%S%
+tasklist /FI "IMAGENAME eq explorer.exe" >NUL
+if %errorlevel% equ 0 (taskkill /f /im explorer.exe >NUL)
 cls&%S%&echo Clearing icon cache...&%S%
-taskkill /f /im explorer.exe
 del /f /s /q "%userprofile%\AppData\Local\Microsoft\Windows\Explorer\iconcache*.*" >NUL
 if %errorlevel% neq 0 (set IRe=echo Please try again with administrator rights!) else (set IRe=)
 del /f /s /q "%userprofile%\AppData\Local\Microsoft\Windows\Explorer\thumbcache*.*" >NUL
 if %errorlevel% neq 0 (set IRe=echo Please try again with administrator rights!) else (set IRe=)
+cls&%S%&echo Starting explorer.exe...&%S%
 start explorer.exe
 cls&%S%&echo Finished!&%S%&%IRe%
 echo If the problem is not solved yet,&echo try to restart the PC.&%L%&%S%&echo %retry% - %back% - %exit%
@@ -382,8 +385,8 @@ if %errorlevel% equ 4 goto ENMain
 if %errorlevel% equ 5 goto EN10iconrepair
 :EN7iconrepair
 cls&%S%&echo Clearing icon cache...&%S%
-taskkill /f /im explorer.exe
-if %errorlevel% neq 0 (set IRe=echo Please try again with administrator rights!) else (set IRe=)
+tasklist /FI "IMAGENAME eq explorer.exe" >NUL
+if %errorlevel% equ 0 (taskkill /f /im explorer.exe >NUL)
 del /f /q /a "%userprofile%\AppData\Local\iconcache.db" >NUL
 if %errorlevel% neq 0 (set IRe=echo Please try again with administrator rights!) else (set IRe=)
 start explorer.exe
@@ -404,19 +407,24 @@ if %errorlevel% equ 2 goto ENnetworkrepair
 if %errorlevel% equ 3 goto ENMain
 if %errorlevel% equ 4 goto end
 :ENnetworkrepair
-cls&%S%&echo Start NetworkRepair?&%L%&%S%&echo Start (s) - %back% - %exit%
-choice /C S2%bck%%ext% /N >NUL
+cls&%S%&echo Run NetworkRepair?&%L%&%S%&echo %yes% - %back% - %exit%
+choice /C %ys%2%bck%%ext% /N >NUL
 if %errorlevel% equ 1 goto ENnetworkrepair1
 if %errorlevel% equ 2 goto ENnetworkrepair1
 if %errorlevel% equ 3 goto ENMain
 if %errorlevel% equ 4 goto end
 :ENnetworkrepair1
-cls&%S%&echo Renewing the network connection...&%S%
+cls&%S%&echo Releasing IPv4-Address...&%S%
 ipconfig /release >NUL
 if %errorlevel% neq 0 (set NRe=echo Please try again with administrator rights!) else (set NRe=)
+cls&%S%&echo Empty DNS cache...&%S%
 ipconfig /flushdns >NUL
 if %errorlevel% neq 0 (set NRe=echo Please try again with administrator rights!) else (set NRe=)
-ipconfig /registerdns >NUL&ipconfig /renew >NUL
+cls&%S%&echo Updating DHCP leases and re-registering DNS names...&%S%
+ipconfig /registerdns >NUL
+cls&%S%&echo Renewing IPv4-Address...&%S%
+ipconfig /renew >NUL
+cls&%S%&echo Activating adapter...&%S%
 netsh interface set interface Ethernet disabled >NUL
 if %errorlevel% equ 0 (netsh interface set interface Ethernet enabled >NUL)
 netsh interface set interface Wi-Fi disabled >NUL
@@ -438,27 +446,30 @@ if %errorlevel% equ 2 goto ENaudiorepair
 if %errorlevel% equ 3 goto ENMain
 if %errorlevel% equ 4 goto end
 :ENaudiorepair
-cls&%S%&echo Start AudioRepair?&%L%&%S%&echo Start (s) - %back% - %exit%
-choice /C S3%bck%%ext% /N >NUL
+cls&%S%&echo Run AudioRepair (v2)?&%S%&echo Press o to run AudioRepair (v1).&%L%&%S%&echo %yes% - %back% - %exit%
+choice /C %ys%3%bck%%ext%O /N >NUL
 if %errorlevel% equ 1 goto ENaudiorepair1
 if %errorlevel% equ 2 goto ENaudiorepair1
 if %errorlevel% equ 3 goto ENMain
 if %errorlevel% equ 4 goto end
+if %errorlevel% equ 5 goto ENaudiorepairold1
 :ENaudiorepair1
-cls&%S%&echo Restarting audio drivers...&%S%
-set process=audiosrv&call :getprocesspid
-if %processpid%==Es (goto ENaudiorepair2)
-taskkill /T /F /PID %processpid% >NUL
+cls&%S%&echo Stopping audio service...&%S%
+set process=audiosrv&call :getprocessid
+if "%processid%"=="Es" (goto ENaudiorepair2) else (if "%processid%"=="" (cls&%S%&echo An error has occurred!&echo Please use AudioRepair v1.&%L%&%S%&echo Press any key to continue.&timeout 3 >NUL&goto ENaudiorepair))
+taskkill /T /F /PID %processid% >NUL
 if %errorlevel% equ 0 (set "ARe=") else (set "ARe=echo Please try again with administrator rights!")
-set process=AudioEndpointBuilder&call :getprocesspid
-if %processpid%==Es (goto DEaudiorepair2)
-taskkill /T /F /PID %processpid% >NUL
+cls&%S%&echo Stopping AudioEndpointBuilder...&%S%
+set process=AudioEndpointBuilder&call :getprocessid
+if "%processid%"=="Es" (goto ENaudiorepair2) else (if "%processid%"=="" (cls&%S%&echo An error has occurred!&echo Please use AudioRepair v1.&%L%&%S%&echo Press any key to continue.&timeout 3 >NUL&goto ENaudiorepair))
+taskkill /T /F /PID %processid% >NUL
 if %errorlevel% equ 0 (set "ARe=") else (set "ARe=echo Please try again with administrator rights!")
 :ENaudiorepair2
+cls&%S%&echo Starting audio service...&%S%
 sc start audiosrv >NUL
 if %errorlevel% equ 0 (set "ARe=") else (if %errorlevel% equ 1056 (timeout 2 /nobreak >NUL&goto ENaudiorepair2) else (set "ARe=echo Please try again with administrator rights!"))
-set process=RzSurroundVADStreamingService&call :getprocesspid
-if not %processpid%==Es (taskkill /T /F /PID %processpid% >NUL&timeout 2 /nobreak >NUL&sc start RzSurroundVADStreamingService >NUL)
+set process=RzSurroundVADStreamingService&call :getprocessid
+if not "%processid%"=="Es" (taskkill /T /F /PID %processid% >NUL&timeout 2 /nobreak >NUL&sc start RzSurroundVADStreamingService >NUL)
 cls&%S%&echo Finished!&%ARe%
 %S%&echo If the problem is not solved yet,&echo try to restart the PC.&%L%&%S%&echo %retry% - %back% - %exit%
 choice /C %ext%S3%bck%%rty% /N >NUL
@@ -467,10 +478,35 @@ if %errorlevel% equ 2 goto end
 if %errorlevel% equ 3 goto end
 if %errorlevel% equ 4 goto ENMain
 if %errorlevel% equ 5 goto ENaudiorepair1
+:ENaudiorepairold1
+cls&%S%&echo Stopping audio service...&%S%
+sc query audiosrv | FIND "STATE" | FIND "STOPPED"
+if %errorlevel% equ 0 (goto ENaudiorepairold2)
+sc stop audiosrv >NUL
+if %errorlevel% equ 0 (set "ARe=") else (set "ARe=echo Please try again with administrator rights!")
+cls&%S%&echo Stopping AudioEndpointBuilder...&%S%
+sc query AudioEndpointBuilder | FIND "STATE" | FIND "STOPPED"
+if %errorlevel% equ 0 (goto ENaudiorepairold2)
+sc stop AudioEndpointBuilder >NUL
+if %errorlevel% equ 0 (set "ARe=") else (set "ARe=echo Please try again with administrator rights!")
+:ENaudiorepairold2
+cls&%S%&echo Starting audio service...&%S%
+sc start audiosrv >NUL
+if %errorlevel% equ 0 (set "ARe=") else (if %errorlevel% equ 1056 (timeout 1 /nobreak >NUL&goto ENaudiorepairold2) else (set "ARe=echo Please try again with administrator rights!"))
+sc query RzSurroundVADStreamingService | FIND "STATE" | FIND "RUNNING"
+if %errorlevel% equ 0 (sc stop RzSurroundVADStreamingService >NUL&timeout 2 /nobreak >NUL&sc start RzSurroundVADStreamingService >NUL)
+cls&%S%&echo Finished!&%ARe%
+%S%&echo If the problem is not solved yet,&echo try to restart the PC.&%L%&%S%&echo %retry% - %back% - %exit%
+choice /C %ext%S3%bck%%rty% /N >NUL
+if %errorlevel% equ 1 goto end
+if %errorlevel% equ 2 goto end
+if %errorlevel% equ 3 goto end
+if %errorlevel% equ 4 goto ENMain
+if %errorlevel% equ 5 goto ENaudiorepairold1
 :ENSystem
 set lastloc=System&set sd=&set sda=&set sdM=
-cls&echo ^> System settings - %settings%%update%
-%S%&echo Press the selected number to continue.&echo For more information press i!&%L%&%S%&%S%&echo  1 ^> Restart windows explorer&echo  2 ^> Start windows CMD&echo  3 ^> Shutdown menu&echo  4 ^> Security menu&echo  5 ^> Delete Windows update&%S%&%L%&%S%&echo %back% - %exit%
+cls&echo ^> System options - %settings%%update%
+%S%&echo Press the selected number to continue.&echo For more information press i!&%L%&%S%&%S%&echo  1 ^> Restart Windows explorer&echo  2 ^> Start Windows CMD&echo  3 ^> Shutdown menu&echo  4 ^> Security menu&echo  5 ^> Delete Windows update&%S%&%L%&%S%&echo %back% - %exit%
 choice /C %bck%%ext%I%se%12345%up% /N >NUL
 if %errorlevel% equ 1 goto ENMain
 if %errorlevel% equ 2 goto end
@@ -483,7 +519,7 @@ if %errorlevel% equ 8 goto ENSPatchperm
 if %errorlevel% equ 9 goto ENSdeleteupdateperm
 if %errorlevel% equ 10 goto update3
 :ENSinformation
-cls&echo ^> System settings ^> Information&%S%&echo Restart windows explorer&echo  Restarts Windows Explorer to solve minor problems.&%L%&%S%&echo Start windows CMD&echo  Starts the command prompt to execute commands manually.&%L%&%S%&echo Shutdown menu&echo  Shutdown the PC.&%L%&%S%&echo Security menu&echo  Create .dat files in the System32 folder and edit the&echo  registry which could prevent Windows against malware.&%L%&%S%&echo %back% - %exit%
+cls&echo ^> System options ^> Information&%S%&echo Restart Windows explorer&echo  Restarts Windows Explorer to solve minor problems.&%L%&%S%&echo Start Windows CMD&echo  Starts the command prompt to execute commands manually.&%L%&%S%&echo Shutdown menu&echo  Shutdown the PC.&%L%&%S%&echo Security menu&echo  Create .dat files in the System32 folder and edit the&echo  registry which could prevent Windows against malware.&%L%&%S%&echo %back% - %exit%
 choice /C %bck%I%ext% /N >NUL
 if %errorlevel% equ 1 goto ENSystem
 if %errorlevel% equ 2 goto ENSystem
@@ -496,13 +532,14 @@ if %errorlevel% equ 2 goto ENSrestartexplorer1
 if %errorlevel% equ 3 goto ENSystem
 if %errorlevel% equ 4 goto end
 :ENSrestartexplorer1
-taskkill /f /im explorer.exe
-if %errorlevel% neq 0 (goto ENSerror)
-timeout 1 /nobreak >NUL&start explorer.exe
+cls&%S%&echo Restarting explorer.exe...&%S%
+tasklist /FI "IMAGENAME eq explorer.exe" >NUL
+if %errorlevel% equ 0 (taskkill /f /im explorer.exe >NUL&timeout 1 /nobreak >NUL)
+start explorer.exe
 if %errorlevel% neq 0 (goto ENSerror)
 goto ENSPfinish
 :ENSstartcmd
-start  "IconRepair %V% (cmd)"
+start "IconRepair %V% (cmd)"
 if %errorlevel% neq 0 (if %errorlevel% neq 6 (goto ENSerror))
 goto ENSystem
 :ENSShutdown
@@ -526,10 +563,10 @@ if %errorlevel% equ 2 goto ENSSimmediately1
 if %errorlevel% equ 3 goto ENSShutdown
 if %errorlevel% equ 4 goto end
 :ENSSimmediately1
-shutdown
-if %errorlevel% equ 1190 cls&%S%&echo An operation is already planned!&%L%&%S%&echo Press key to continue.&timeout 3 >NUL&goto ENSShutdown
-if %errorlevel% neq 0 cls&%S%&echo An error has occurred!&%L%&%S%&echo Press key to continue.&timeout 3 >NUL&goto ENSShutdown
-set sd=Cancel shutdown (c)&set sd=echo Set time: Immediately&set sda=C&set sdM=%S%&set sdM2=%L%&goto ENSPfinish
+shutdown /s /t 1
+if %errorlevel% equ 1190 cls&%S%&echo An operation is already planned!&%L%&%S%&echo Press any key to continue.&timeout 3 >NUL&goto ENSShutdown
+if %errorlevel% neq 0 cls&%S%&echo An error has occurred!&%L%&%S%&echo Press any key to continue.&timeout 3 >NUL&goto ENSShutdown
+set sd2=Cancel shutdown (c)&set sd=echo Set time: Immediately&set sda=C&set sdM=%S%&set sdM2=%L%&goto ENSPfinish
 :ENSSshutdown
 cls&%S%&echo Shutdown PC in the next few minutes?&%L%&%S%&echo %yes% - %back% - %exit%
 choice /C %ys%2%bck%%ext% /N >NUL
@@ -539,9 +576,9 @@ if %errorlevel% equ 3 goto ENSShutdown
 if %errorlevel% equ 4 goto end
 :ENSSshutdown1
 shutdown /s
-if %errorlevel% equ 1190 cls&%S%&echo An operation is already planned!&%L%&%S%&echo Press key to continue.&timeout 3 >NUL&goto ENSShutdown
-if %errorlevel% neq 0 cls&%S%&echo An error has occurred!&%L%&%S%&echo Press key to continue.&timeout 3 >NUL&goto ENSShutdown
-set sd=Cancel shutdown (c)&set sd=echo Set time: In the next few minutes&set sda=C&set sdM=%S%&set sdM2=%L%&goto ENSPfinish
+if %errorlevel% equ 1190 cls&%S%&echo An operation is already planned!&%L%&%S%&echo Press any key to continue.&timeout 3 >NUL&goto ENSShutdown
+if %errorlevel% neq 0 cls&%S%&echo An error has occurred!&%L%&%S%&echo Press any key to continue.&timeout 3 >NUL&goto ENSShutdown
+set sd2=Cancel shutdown (c)&set sd=echo Set time: In the next few minutes&set sda=C&set sdM=%S%&set sdM2=%L%&goto ENSPfinish
 :ENSScustom
 cls&%S%&echo Specify time in seconds (numbers only/max. 99999).&echo Confirm with enter!&%L%&%S%&echo %back%&%S%
 set /p sdz=
@@ -554,9 +591,9 @@ if %errorlevel% equ 1 goto ENSScustom1
 if %errorlevel% equ 2 goto ENSScustom
 if %errorlevel% equ 3 goto end
 :ENSScustom1
-shutdown -s -t %sdz%
-if %errorlevel% equ 1190 cls&%S%&echo An operation is already planned!&%L%&%S%&echo Press key to continue.&timeout 3 >NUL&goto ENSShutdown
-if %errorlevel% neq 0 cls&%S%&echo An error has occurred!&echo Please use only numbers (max. 99999).&%L%&%S%&echo Press key to continue.&timeout 5 >NUL&goto ENSShutdown
+shutdown /s /t %sdz%
+if %errorlevel% equ 1190 cls&%S%&echo An operation is already planned!&%L%&%S%&echo Press any key to continue.&timeout 3 >NUL&goto ENSShutdown
+if %errorlevel% neq 0 cls&%S%&echo An error has occurred!&echo Please use only numbers (max. 99999).&%L%&%S%&echo Press any key to continue.&timeout 5 >NUL&goto ENSShutdown
 set sd2=echo Cancel shutdown (c)&set sd=echo Set time: %sdz%s&set sda=C&set sdM=%S%&set sdM2=%L%&goto ENSPfinish
 :ENSSrestart
 cls&%S%&echo Restart PC immediately?&%L%&%S%&echo %yes% - %back% - %exit%
@@ -566,15 +603,15 @@ if %errorlevel% equ 2 goto ENSSrestart1
 if %errorlevel% equ 3 goto ENSShutdown
 if %errorlevel% equ 4 goto end
 :ENSSrestart1
-shutdown -r
-if %errorlevel% equ 1190 cls&%S%&echo An operation is already planned!&%L%&%S%&echo Press key to continue.&timeout 3 >NUL&goto ENSShutdown
-if %errorlevel% neq 0 cls&%S%&echo An error has occurred!&%L%&%S%&echo Press key to continue.&timeout 3 >NUL&goto ENSShutdown
-set sd2=Cancel restart (c)&set sd=echo Set time: Immediately&set sda=C&set sdM=%S%&set sdM2=%L%&goto ENSPfinish
+shutdown /r
+if %errorlevel% equ 1190 cls&%S%&echo An operation is already planned!&%L%&%S%&echo Press any key to continue.&timeout 3 >NUL&goto ENSShutdown
+if %errorlevel% neq 0 cls&%S%&echo An error has occurred!&%L%&%S%&echo Press any key to continue.&timeout 3 >NUL&goto ENSShutdown
+set sd2=echo Cancel restart (c)&set sd=echo Set time: Immediately&set sda=C&set sdM=%S%&set sdM2=%L%&goto ENSPfinish
 :ENSScancel
 shutdown /a
-if %errorlevel% equ 1116 cls&%S%&echo No operation aborted&%L%&%S%&echo Press key to continue.&timeout 3 >NUL&goto ENSShutdown
-if %errorlevel% equ 0 cls&%S%&echo Operation canceled&%L%&%S%&echo Press key to continue.&timeout 3 >NUL&goto ENSShutdown
-cls&%S%&echo An error has occurred!&%L%&%S%&echo Press key to continue.&timeout 3 >NUL&goto ENSShutdown
+if %errorlevel% equ 1116 cls&%S%&echo No operation aborted&%L%&%S%&echo Press any key to continue.&timeout 3 >NUL&goto ENSShutdown
+if %errorlevel% equ 0 cls&%S%&echo Operation canceled&%L%&%S%&echo Press any key to continue.&timeout 3 >NUL&goto ENSShutdown
+cls&%S%&echo An error has occurred!&%L%&%S%&echo Press any key to continue.&timeout 3 >NUL&goto ENSShutdown
 :ENSPatchperm
 if %adc%==Disabled (goto ENSPatch) else (if %admin% equ 1 (goto ENSPatch))
 cls&%S%&echo No permission! Start IconRepair as an Administrator.&echo Continue anyway?&%L%&%S%&echo %yes% - %back% - %exit%
@@ -705,7 +742,7 @@ icacls "%windir%\infpub.dat" /grant *S-1-5-32-544:F >NUL
 del /f /q "%windir%\infpub.dat" >NUL
 goto ENSPatch
 :ENSPerror
-cls&%S%&echo An error occurred!&%S%&echo Note: To change this setting, IconRepair must be&echo       started as administrator!&%L%&%S%&echo Press key to continue.&timeout 5 >NUL&goto ENSPatch
+cls&%S%&echo An error occurred!&%S%&echo Note: To change this setting, IconRepair must be&echo       started as administrator!&%L%&%S%&echo Press any key to continue.&timeout 5 >NUL&goto ENSPatch
 :ENSPfinish
 cls&%S%&echo Finished!&%sdM2%
 %sdM%
@@ -738,13 +775,13 @@ if %errorlevel% equ 2 goto ENSdeleteupdate1
 if %errorlevel% equ 3 goto ENSystem
 if %errorlevel% equ 4 goto end
 :ENSdeleteupdate1
-if not exist "%systemroot%\SoftwareDistribution\Download\" (cls&%S%&echo No update found.&%L%&%S%&echo Press key to continue.&timeout 3 >NUL&goto ENSystem)
+if not exist "%systemroot%\SoftwareDistribution\Download\" (cls&%S%&echo No update found.&%L%&%S%&echo Press any key to continue.&timeout 3 >NUL&goto ENSystem)
 cls&%S%&echo Delete update...&%L%
 sc stop wuauserv >NUL&sc stop bits >NUL
 rd /S /Q "%systemroot%\SoftwareDistribution\" >NUL
-cls&%S%&echo Finished!&%L%&%S%&echo Press key to continue.&timeout 3 >NUL&goto ENSystem
+cls&%S%&echo Finished!&%L%&%S%&echo Press any key to continue.&timeout 3 >NUL&goto ENSystem
 :ENSerror
-cls&%S%&echo An error occurred!&%L%&%S%&echo Press key to continue.&timeout 3 >NUL&goto ENSystem
+cls&%S%&echo An error occurred!&%L%&%S%&echo Press any key to continue.&timeout 3 >NUL&goto ENSystem
 :DEMain
 set lastloc=Main&set updateloc=DEMain&set settings=Einstellungen (e)&set se=E&set back=Zurck (z)&set exit=Beenden (b)&set yes=Ja (j)&set bck=Z&set ext=B&set ys=J&set retry=Wiederholen (w)&set rty=W
 cls&echo About (a) - %settings%%update%
@@ -772,20 +809,22 @@ if %errorlevel% equ 1 goto Main
 if %errorlevel% equ 2 goto Main
 if %errorlevel% equ 3 goto end
 :DEiconrepair
-cls&%S%&echo IconRepair starten?&%L%&%S%&echo Start (s) - %back% - %exit%
-choice /C S1%bck%%ext% /N >NUL
+cls&%S%&echo IconRepair ausfhren?&%L%&%S%&echo %yes% - %back% - %exit%
+choice /C %ys%1%bck%%ext% /N >NUL
 if %errorlevel% equ 1 if %winver%==6.1 (goto DE7iconrepair) else (goto DE10iconrepair)
 if %errorlevel% equ 2 if %winver%==6.1 (goto DE7iconrepair) else (goto DE10iconrepair)
 if %errorlevel% equ 3 goto DEMain
 if %errorlevel% equ 4 goto end
 :DE10iconrepair
-cls&%S%&echo L”sche Iconcaches...&%L%
-taskkill /f /im explorer.exe
-if %errorlevel% neq 0 (set IRe=echo Bitte mit administrator rechten erneut versuchen!) else (set IRe=)
+cls&%S%&echo explorer.exe beenden...&%L%
+tasklist /FI "IMAGENAME eq explorer.exe" >NUL
+if %errorlevel% equ 0 (taskkill /f /im explorer.exe >NUL)
+cls&%S%&echo Iconcaches l”schen...&%L%
 del /f /s /q "%userprofile%\AppData\Local\Microsoft\Windows\Explorer\iconcache*.*" >NUL
 if %errorlevel% neq 0 (set IRe=echo Bitte mit administrator rechten erneut versuchen!) else (set IRe=)
 del /f /s /q "%userprofile%\AppData\Local\Microsoft\Windows\Explorer\thumbcache*.*" >NUL
 if %errorlevel% neq 0 (set IRe=echo Bitte mit administrator rechten erneut versuchen!) else (set IRe=)
+cls&%S%&echo explorer.exe starten...&%L%
 start explorer.exe
 cls&%S%&echo Fertig!&%IRe%
 %S%&echo Falls das Problem immer noch vorhanden ist,&echo versuche den PC neu zu starten.&%L%&%S%&echo %retry% - %back% - %exit%
@@ -796,11 +835,13 @@ if %errorlevel% equ 3 goto end
 if %errorlevel% equ 4 goto DEMain
 if %errorlevel% equ 5 goto DE10iconrepair
 :DE7iconrepair
-cls&%S%&echo L”sche Iconcache...&%L%
-taskkill /f /im explorer.exe
-if %errorlevel% neq 0 (set IRe=echo Bitte mit administrator rechten erneut versuchen!) else (set IRe=)
+cls&%S%&echo explorer.exe beenden...&%L%
+tasklist /FI "IMAGENAME eq explorer.exe" >NUL
+if %errorlevel% equ 0 (taskkill /f /im explorer.exe >NUL)
+cls&%S%&echo Iconcaches l”schen...&%L%
 del /f /q /a "%userprofile%\AppData\Local\iconcache.db" >NUL
 if %errorlevel% neq 0 (set IRe=echo Bitte mit administrator rechten erneut versuchen!) else (set IRe=)
+cls&%S%&echo explorer.exe starten...&%L%
 start explorer.exe
 cls&%S%&echo Fertig!&%IRe%
 %S%&echo Falls das Problem immer noch vorhanden ist,&echo versuche den PC neu zu starten.&%L%&%S%&echo %retry% - %back% - %exit%
@@ -819,19 +860,24 @@ if %errorlevel% equ 2 goto DEnetworkrepair
 if %errorlevel% equ 3 goto DEMain
 if %errorlevel% equ 4 goto end
 :DEnetworkrepair
-cls&%S%&echo NetworkRepair starten?&%L%&%S%&echo Start (s) - %back% - %exit%
-choice /C S2%bck%%ext% /N >NUL
+cls&%S%&echo NetworkRepair ausfhren?&%L%&%S%&echo %yes% - %back% - %exit%
+choice /C %ys%2%bck%%ext% /N >NUL
 if %errorlevel% equ 1 goto DEnetworkrepair1
 if %errorlevel% equ 2 goto DEnetworkrepair1
 if %errorlevel% equ 3 goto DEMain
 if %errorlevel% equ 4 goto end
 :DEnetworkrepair1
-cls&%S%&echo Erneuerung der Netzwerkverbindung...&%L%
+cls&%S%&echo IPv4-Adresse freigeben...&%L%
 ipconfig /release >NUL
 if %errorlevel% neq 0 (set NRe=echo Bitte mit administrator rechten erneut versuchen!) else (set NRe=)
+cls&%S%&echo DNS Cache leeren...&%L%
 ipconfig /flushdns >NUL
 if %errorlevel% neq 0 (set NRe=echo Bitte mit administrator rechten erneut versuchen!) else (set NRe=)
-ipconfig /registerdns >NUL&ipconfig /renew >NUL
+cls&%S%&echo DHCP-Leases aktualisieren und DNS-Namen erneut registrieren...&%L%
+ipconfig /registerdns >NUL
+cls&%S%&echo IPv4-Adresse erneuern...&%L%
+ipconfig /renew >NUL
+cls&%S%&echo Adapter aktivieren...&%L%
 netsh interface set interface Ethernet disabled >NUL
 if %errorlevel% equ 0 (netsh interface set interface Ethernet enabled >NUL)
 netsh interface set interface WLAN disabled >NUL
@@ -853,27 +899,30 @@ if %errorlevel% equ 2 goto DEaudiorepair
 if %errorlevel% equ 3 goto DEMain
 if %errorlevel% equ 4 goto end
 :DEaudiorepair
-cls&%S%&echo AudioRepair starten?&%L%&%S%&echo Start (s) - %back% - %exit%
-choice /C S3%bck%%ext% /N >NUL
+cls&%S%&echo AudioRepair v2 ausfhren?&%S%&echo Drcke a um AudioRepair v1 auszufhren.&%L%&%S%&echo %yes% - %back% - %exit%
+choice /C %ys%3%bck%%ext%A /N >NUL
 if %errorlevel% equ 1 goto DEaudiorepair1
 if %errorlevel% equ 2 goto DEaudiorepair1
 if %errorlevel% equ 3 goto DEMain
 if %errorlevel% equ 4 goto end
+if %errorlevel% equ 5 goto DEaudiorepairold1
 :DEaudiorepair1
-cls&%S%&echo Audiotreiber neu starten...&%L%
-set process=audiosrv&call :getprocesspid
-if %processpid%==Es (goto DEaudiorepair2)
-taskkill /T /F /PID %processpid% >NUL
+cls&%S%&echo Audiodienst beenden...&%L%
+set process=audiosrv&call :getprocessid
+if "%processid%"=="Es" (goto DEaudiorepair2) else (if "%processid%"=="" (cls&%S%&echo Es ist ein Fehler aufgetreten!&echo Bitte AudioRepair v1 verwenden.&%L%&%S%&echo Eine beliebige Taste drcken, um fortzufahren&timeout 3 >NUL&goto DEaudiorepair))
+taskkill /T /F /PID %processid% >NUL
 if %errorlevel% equ 0 (set "ARe=") else (set "ARe=echo Bitte mit administrator rechten erneut versuchen!")
-set process=AudioEndpointBuilder&call :getprocesspid
-if %processpid%==Es (goto DEaudiorepair2)
-taskkill /T /F /PID %processpid% >NUL
+cls&%S%&echo AudioEndpointBuilder beenden...&%L%
+set process=AudioEndpointBuilder&call :getprocessid
+if "%processid%"=="Es" (goto DEaudiorepair2) else (if "%processid%"=="" (cls&%S%&echo Es ist ein Fehler aufgetreten!&echo Bitte AudioRepair v1 verwenden.&%L%&%S%&echo Eine beliebige Taste drcken, um fortzufahren&timeout 3 >NUL&goto DEaudiorepair))
+taskkill /T /F /PID %processid% >NUL
 if %errorlevel% equ 0 (set "ARe=") else (set "ARe=echo Bitte mit administrator rechten erneut versuchen!")
 :DEaudiorepair2
+cls&%S%&echo Audiodienst starten...&%L%
 sc start audiosrv >NUL
 if %errorlevel% equ 0 (set "ARe=") else (if %errorlevel% equ 1056 (timeout 2 /nobreak >NUL&goto DEaudiorepair2) else (set "ARe=echo Bitte mit administrator rechten erneut versuchen!"))
-set process=RzSurroundVADStreamingService&call :getprocesspid
-if not %processpid%==Es (taskkill /T /F /PID %processpid% >NUL&timeout 2 /nobreak >NUL&sc start RzSurroundVADStreamingService >NUL)
+set process=RzSurroundVADStreamingService&call :getprocessid
+if not "%processid%"=="Es" (taskkill /T /F /PID %processid% >NUL&timeout 2 /nobreak >NUL&sc start RzSurroundVADStreamingService >NUL)
 cls&%S%&echo Fertig!&%ARe%
 %S%&echo Falls das Problem immer noch vorhanden ist,&echo versuche den PC neu zu starten.&%L%&%S%&echo %retry% - %back% - %exit%
 choice /C %ext%S3%bck%%rty% /N >NUL
@@ -882,6 +931,31 @@ if %errorlevel% equ 2 goto end
 if %errorlevel% equ 3 goto end
 if %errorlevel% equ 4 goto DEMain
 if %errorlevel% equ 5 goto DEaudiorepair1
+:DEaudiorepairold1
+cls&%S%&echo Audiodienst beenden...&%L%
+sc query audiosrv | FIND "STATE" | FIND "STOPPED"
+if %errorlevel% equ 0 (goto DEaudiorepairold2)
+sc stop audiosrv >NUL
+cls&%S%&echo AudioEndpointBuilder beenden...&%L%
+if %errorlevel% equ 0 (set "ARe=") else (set "ARe=echo Bitte mit administrator rechten erneut versuchen!")
+sc query AudioEndpointBuilder | FIND "STATE" | FIND "STOPPED"
+if %errorlevel% equ 0 (goto DEaudiorepairold2)
+sc stop AudioEndpointBuilder >NUL
+if %errorlevel% equ 0 (set "ARe=") else (set "ARe=echo Bitte mit administrator rechten erneut versuchen!")
+:DEaudiorepairold2
+cls&%S%&echo Audiodienst starten...&%L%
+sc start audiosrv >NUL
+if %errorlevel% equ 0 (set "ARe=") else (if %errorlevel% equ 1056 (timeout 1 /nobreak >NUL&goto DEaudiorepairold2) else (set "ARe=echo Bitte mit administrator rechten erneut versuchen!"))
+sc query RzSurroundVADStreamingService | FIND "STATE" | FIND "RUNNING"
+if %errorlevel% equ 0 (sc stop RzSurroundVADStreamingService >NUL&timeout 2 /nobreak >NUL&sc start RzSurroundVADStreamingService >NUL)
+cls&%S%&echo Fertig!&%ARe%
+%S%&echo Falls das Problem immer noch vorhanden ist,&echo versuche den PC neu zu starten.&%L%&%S%&echo %retry% - %back% - %exit%
+choice /C %ext%S3%bck%%rty% /N >NUL
+if %errorlevel% equ 1 goto end
+if %errorlevel% equ 2 goto end
+if %errorlevel% equ 3 goto end
+if %errorlevel% equ 4 goto DEMain
+if %errorlevel% equ 5 goto DEaudiorepairold1
 :DESystem
 set lastloc=System&set sd=&set sda=&set sdM=
 cls&echo ^> Systemoptionen - %settings%%update%
@@ -911,9 +985,10 @@ if %errorlevel% equ 2 goto DESrestartexplorer1
 if %errorlevel% equ 3 goto DESystem
 if %errorlevel% equ 4 goto end
 :DESrestartexplorer1
-taskkill /f /im explorer.exe
-if %errorlevel% neq 0 (goto DESerror)
-timeout 1 /nobreak >NUL&start explorer.exe
+cls&%S%&echo explorer.exe neustarten...&%S%
+tasklist /FI "IMAGENAME eq explorer.exe" >NUL
+if %errorlevel% equ 0 (taskkill /f /im explorer.exe >NUL&timeout 1 /nobreak >NUL)
+start explorer.exe
 if %errorlevel% neq 0 (goto DESerror)
 goto DESPfinish
 :DESstartcmd
@@ -941,10 +1016,10 @@ if %errorlevel% equ 2 goto DESSimmediately1
 if %errorlevel% equ 3 goto DESShutdown
 if %errorlevel% equ 4 goto end
 :DESSimmediately1
-shutdown
-if %errorlevel% equ 1190 cls&%S%&echo Es ist bereits ein vorgang geplant!&%L%&%S%&echo Taste drcken um fortzufahren.&timeout 3 >NUL&goto DESShutdown
-if %errorlevel% neq 0 cls&%S%&echo Es ist ein Fehler aufgetreten!&%L%&%S%&echo Taste drcken um fortzufahren.&timeout 3 >NUL&goto DESShutdown
-set sd2=Herunterfahren abbrechen (a)&set sd=echo Eingestellte Zeit: Sofort&set sda=A&set sdM=%S%&set sdM2=%L%&goto DESPfinish
+shutdown /s /t 1
+if %errorlevel% equ 1190 cls&%S%&echo Es ist bereits ein vorgang geplant!&%L%&%S%&echo Eine beliebige Taste drcken, um fortzufahren&timeout 3 >NUL&goto DESShutdown
+if %errorlevel% neq 0 cls&%S%&echo Es ist ein Fehler aufgetreten!&%L%&%S%&echo Eine beliebige Taste drcken, um fortzufahren&timeout 3 >NUL&goto DESShutdown
+set sd2=echo Herunterfahren abbrechen (a)&set sd=echo Eingestellte Zeit: Sofort&set sda=A&set sdM=%S%&set sdM2=%L%&goto DESPfinish
 :DESSshutdown
 cls&%S%&echo PC innerhalb der n„chsten Minuten herunterfahren?&%L%&%S%&echo %yes% - %back% - %exit%
 choice /C %ys%2%bck%%ext% /N >NUL
@@ -954,9 +1029,9 @@ if %errorlevel% equ 3 goto DESShutdown
 if %errorlevel% equ 4 goto end
 :DESSshutdown1
 shutdown /s
-if %errorlevel% equ 1190 cls&%S%&echo Es ist bereits ein vorgang geplant!&%L%&%S%&echo Taste drcken um fortzufahren.&timeout 3 >NUL&goto DESShutdown
-if %errorlevel% neq 0 cls&%S%&echo Es ist ein Fehler aufgetreten!&%L%&%S%&echo Taste drcken um fortzufahren.&timeout 3 >NUL&goto DESShutdown
-set sd2=Herunterfahren abbrechen (a)&set sd=echo Eingestellte Zeit: In den n„chsten Minuten&set sda=A&set sdM=%S%&set sdM2=%L%&goto DESPfinish
+if %errorlevel% equ 1190 cls&%S%&echo Es ist bereits ein vorgang geplant!&%L%&%S%&echo Eine beliebige Taste drcken, um fortzufahren&timeout 3 >NUL&goto DESShutdown
+if %errorlevel% neq 0 cls&%S%&echo Es ist ein Fehler aufgetreten!&%L%&%S%&echo Eine beliebige Taste drcken, um fortzufahren&timeout 3 >NUL&goto DESShutdown
+set sd2=echo Herunterfahren abbrechen (a)&set sd=echo Eingestellte Zeit: In den n„chsten Minuten&set sda=A&set sdM=%S%&set sdM2=%L%&goto DESPfinish
 :DESScustom
 cls&%S%&echo Zeit in Sekunden angeben (nur Zahlen/max. 99999).&echo Mit enter best„tigen!&%L%&%S%&echo %back%&%S%
 set /p sdz=
@@ -969,9 +1044,9 @@ if %errorlevel% equ 1 goto DESScustom1
 if %errorlevel% equ 2 goto DESScustom
 if %errorlevel% equ 3 goto end
 :DESScustom1
-shutdown -s -t %sdz%
-if %errorlevel% equ 1190 cls&%S%&echo Es ist bereits ein vorgang geplant!&%L%&%S%&echo Taste drcken um fortzufahren.&timeout 3 >NUL&goto DESShutdown
-if %errorlevel% neq 0 cls&%S%&echo Es ist ein Fehler aufgetreten!&echo Bitte verwende nur Zahlen (max. 99999).&%L%&%S%&echo Taste drcken um fortzufahren.&timeout 5 >NUL&goto DESShutdown
+shutdown /s /t %sdz%
+if %errorlevel% equ 1190 cls&%S%&echo Es ist bereits ein vorgang geplant!&%L%&%S%&echo Eine beliebige Taste drcken, um fortzufahren&timeout 3 >NUL&goto DESShutdown
+if %errorlevel% neq 0 cls&%S%&echo Es ist ein Fehler aufgetreten!&echo Bitte verwende nur Zahlen (max. 99999).&%L%&%S%&echo Eine beliebige Taste drcken, um fortzufahren&timeout 5 >NUL&goto DESShutdown
 set sd2=echo Herunterfahren abbrechen (a)&set sd=echo Eingestellte Zeit: %sdz%s&set sda=A&set sdM=%S%&set sdM2=%L%&goto DESPfinish
 :DESSrestart
 cls&%S%&echo PC sofort neu starten?&%L%&%S%&echo %yes% - %back% - %exit%
@@ -981,15 +1056,15 @@ if %errorlevel% equ 2 goto DESSrestart1
 if %errorlevel% equ 3 goto DESShutdown
 if %errorlevel% equ 4 goto end
 :DESSrestart1
-shutdown -r
-if %errorlevel% equ 1190 cls&%S%&echo Es ist bereits ein vorgang geplant!&%L%&%S%&echo Taste drcken um fortzufahren.&timeout 3 >NUL&goto DESShutdown
-if %errorlevel% neq 0 cls&%S%&echo Es ist ein Fehler aufgetreten!&%L%&%S%&echo Taste drcken um fortzufahren.&timeout 3 >NUL&goto DESShutdown
-set sd=Neustart abbrechen (a)&set sd=echo Eingestellte Zeit: Sofort&set sda=A&set sdM=%S%&set sdM2=%L%&goto DESPfinish
+shutdown /r
+if %errorlevel% equ 1190 cls&%S%&echo Es ist bereits ein vorgang geplant!&%L%&%S%&echo Eine beliebige Taste drcken, um fortzufahren&timeout 3 >NUL&goto DESShutdown
+if %errorlevel% neq 0 cls&%S%&echo Es ist ein Fehler aufgetreten!&%L%&%S%&echo Eine beliebige Taste drcken, um fortzufahren&timeout 3 >NUL&goto DESShutdown
+set sd2=Neustart abbrechen (a)&set sd=echo Eingestellte Zeit: Sofort&set sda=A&set sdM=%S%&set sdM2=%L%&goto DESPfinish
 :DESScancel
 shutdown /a
-if %errorlevel% equ 1116 cls&%S%&echo Kein Vorgang abgebrochen!&%L%&%S%&echo Taste drcken um fortzufahren.&timeout 3 >NUL&goto DESShutdown
-if %errorlevel% equ 0 cls&%S%&echo Vorgang abgebrochen!&%L%&%S%&echo Taste drcken um fortzufahren.&timeout 3 >NUL&goto DESShutdown
-cls&%S%&echo Es ist ein Fehler aufgetreten!&%L%&%S%&echo Taste drcken um fortzufahren.&timeout 3 >NUL&goto DESShutdown
+if %errorlevel% equ 1116 cls&%S%&echo Kein Vorgang abgebrochen!&%L%&%S%&echo Eine beliebige Taste drcken, um fortzufahren&timeout 3 >NUL&goto DESShutdown
+if %errorlevel% equ 0 cls&%S%&echo Vorgang abgebrochen!&%L%&%S%&echo Eine beliebige Taste drcken, um fortzufahren&timeout 3 >NUL&goto DESShutdown
+cls&%S%&echo Es ist ein Fehler aufgetreten!&%L%&%S%&echo Eine beliebige Taste drcken, um fortzufahren&timeout 3 >NUL&goto DESShutdown
 :DESPatchperm
 if %adc%==Deaktiviert (goto DESPatch) else (if %admin% equ 1 (goto DESPatch))
 cls&%S%&echo Keine Berechtigung! Starte IconRepair als Administrator.&echo Trotzdem fortfahren?&%L%&%S%&echo %yes% - %back% - %exit%
@@ -1120,7 +1195,7 @@ icacls "%windir%\infpub.dat" /grant *S-1-5-32-544:F >NUL
 del /f /q "%windir%\infpub.dat" >NUL
 goto DESPatch
 :DESPerror
-cls&%S%&echo Es ist ein Fehler aufgetreten!&%S%&echo Wichtig: Um diese Einstellung zu „ndern muss IconRepair&echo          als Administrator gestartet werden!&%L%&%S%&echo Taste drcken um fortzufahren.&timeout 5 >NUL&goto DESPatch
+cls&%S%&echo Es ist ein Fehler aufgetreten!&%S%&echo Wichtig: Um diese Einstellung zu „ndern muss IconRepair&echo          als Administrator gestartet werden!&%L%&%S%&echo Eine beliebige Taste drcken, um fortzufahren&timeout 5 >NUL&goto DESPatch
 :DESPfinish
 cls&%S%&echo Fertig!&%sdM2%
 %sdM%
@@ -1153,13 +1228,13 @@ if %errorlevel% equ 2 goto DESdeleteupdate1
 if %errorlevel% equ 3 goto DESystem
 if %errorlevel% equ 4 goto end
 :DESdeleteupdate1
-if not exist "%systemroot%\SoftwareDistribution\Download\" (cls&%S%&echo Kein Update gefunden.&%L%&%S%&echo Taste drcken um fortzufahren.&timeout 3 >NUL&goto DESystem)
+if not exist "%systemroot%\SoftwareDistribution\Download\" (cls&%S%&echo Kein Update gefunden.&%L%&%S%&echo Eine beliebige Taste drcken, um fortzufahren&timeout 3 >NUL&goto DESystem)
 cls&%S%&echo L”sche Update...&%L%
 sc stop wuauserv >NUL&sc stop bits >NUL
 rd /S /Q "%systemroot%\SoftwareDistribution\" >NUL
-cls&%S%&echo Fertig!&%L%&%S%&echo Taste drcken um fortzufahren.&timeout 3 >NUL&goto DESystem
+cls&%S%&echo Fertig!&%L%&%S%&echo Eine beliebige Taste drcken, um fortzufahren&timeout 3 >NUL&goto DESystem
 :DESerror
-cls&%S%&echo Es ist ein Fehler aufgetreten!&%L%&%S%&echo Taste drcken um fortzufahren.&timeout 3 >NUL&goto DESystem
+cls&%S%&echo Es ist ein Fehler aufgetreten!&%L%&%S%&echo Eine beliebige Taste drcken, um fortzufahren&timeout 3 >NUL&goto DESystem
 :end
 if %language%==Deutsch (cls&%S%&echo Beendet...&%L%&timeout 2 >NUL&exit) else (cls&%S%&echo Canceled...&%L%&timeout 2 >NUL&exit)
 :writesettings
@@ -1167,8 +1242,8 @@ if %savesettings%==Disabled (exit /b) else (if %savesettings%==Deaktiviert (exit
 if not exist %settingspath% (echo. >%settingspath%)
 if exist %settingspath% (echo set savesettings=%savesettings%>%settingspath%&echo set language=%language%>>%settingspath%&echo set winver=%winver%>>%settingspath%&echo set adc=%adc%>>%settingspath%&echo set udc=%udc%>>%settingspath%&echo set coloredfont=%coloredfont%>>%settingspath%&echo set sound=%sound%>>%settingspath%) else (goto colorfonterror)
 exit /b
-:getprocesspid
-for /f "tokens=2" %%m in ('tasklist /SVC /NH /FI "services eq %process%"') do (set processpid=%%m)
+:getprocessid
+for /f "tokens=2" %%m in ('tasklist /SVC /NH /FI "services eq %process%"') do (set processid=%%m)
 exit /b
 :colorfont
 if not exist "%userprofile%\IconRepair\" (mkdir "%userprofile%\IconRepair\")
@@ -1183,8 +1258,8 @@ if %language%==Deutsch (goto DEcolorfonterror) else (goto ENcolorfonterror)
 :DEcolorfonterror
 if "%savesettings%"=="Aktiviert" (set savesettings=Deaktiviert)
 if "%coloredfont%"=="Aktiviert" (set coloredfont=Deaktiviert)
-cls&%L%&%S%&echo Fehler! Keine Berechtigung.&echo Einstellungen wurden deaktiviert.&%L%&%S%&echo Taste drcken um fortzufahren.&timeout 5 >NUL&goto settings
+cls&%L%&%S%&echo Fehler! Keine Berechtigung.&echo Einstellungen wurden deaktiviert.&%L%&%S%&echo Eine beliebige Taste drcken, um fortzufahren&timeout 5 >NUL&goto settings
 :ENcolorfonterror
 if "%savesettings%"=="Enabled" (set savesettings=Disabled)
 if "%coloredfont%"=="Enabled" (set coloredfont=Disabled)
-cls&%L%&%S%&echo Error! No permission.&echo Settings have been disabled.&%L%&%S%&echo Press key to continue.&timeout 5 >NUL&goto settings
+cls&%L%&%S%&echo Error! No permission.&echo Settings have been disabled.&%L%&%S%&echo Press any key to continue.&timeout 5 >NUL&goto settings
