@@ -1,3 +1,7 @@
+Version 3.3 (3321)
+ +Improved colored font
+ +Other improvements
+
 Version 3.3 (3313)
  +Old AudioRepair as alternative
  +Reload script button in about
