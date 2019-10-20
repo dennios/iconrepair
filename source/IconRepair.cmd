@@ -1,7 +1,7 @@
-@echo off&mode 79,26&set V=3.3&set B=3313&set RU=2.5&set year=2019&pushd "%userprofile%"&set "settingspath="%userprofile%\IconRepair\settings.cmd""
+@echo off&mode 79,26&set V=3.3&set B=3321&set RU=2.5&set year=2019&pushd "%userprofile%"&set "settingspath="%userprofile%\IconRepair\settings.cmd""
 set L=echo ____________________________________________________________&set S=echo:&set R=title IconRepair %V%&set update=&set up=
+for /f %%A in ('"prompt $H &for %%B in (1) do rem"') do set space=%%A
 :reload
-for /F "tokens=1,2 delims=#" %%a in ('"prompt #$H#$E# & echo on & for %%b in (1) do rem"') do (set "DEL=%%a")
 if exist %settingspath% (call %settingspath%)
 if "%savesettings%"=="" (set savesettings=Disabled)
 if "%udc%"=="" (set udc=Disabled)
@@ -36,9 +36,7 @@ choice /C %se%%ext% /N >NUL
 if %errorlevel% equ 1 goto settings
 if %errorlevel% equ 2 goto end
 :update
-if not "%lastloc%"=="Main" (cls&%S%)
 if %language%==Deutsch (%S%&echo Suche nach Updates...) else (%S%&echo Checking for updates...)
-if not "%lastloc%"=="Main" (%L%)
 ping -n 1 -l 0 -w 1 github.com >NUL
 if %errorlevel% equ 0 (set np=1&goto update2)
 ping -n 1 -l 0 -w 1 github.com >NUL
@@ -69,7 +67,7 @@ if %errorlevel% equ 3 goto changelog
 if %errorlevel% equ 4 goto reload
 if %errorlevel% equ 5 goto end
 :changelog
-cls&echo ^> Changelog&%S%&echo Version %V% (%B%)&echo  +Old AudioRepair as alternative&echo  +Reload script button in about&echo  +Better loading progress&echo  +Improvements&%S%&echo Version 3.3 (3303)&echo  +New better ^& faster AudioRepair&echo  +Renamed "Options" to "Settings"&echo  +Admin indicator&echo  +Improvements&echo  +Fixes&%L%&%S%&echo %back% - %exit%
+cls&echo ^> Changelog&%S%&echo Version %V% (%B%)&echo  +Improved colored font&echo  +Other improvements&%S%&echo Version 3.3 (3313)&echo  +Old AudioRepair as alternative&echo  +Reload script button in about&echo  +Better loading progress&echo  +Improvements&%S%&echo Version 3.3 (3303)&echo  +New better ^& faster AudioRepair&echo  +Renamed "Options" to "Settings"&echo  +Admin indicator&echo  +Improvements&echo  +Fixes&%L%&%S%&echo %back% - %exit%
 choice /C %bck%L%ext% /N >NUL
 if %errorlevel% equ 1 goto about
 if %errorlevel% equ 2 goto about
@@ -99,11 +97,11 @@ cls&%R% (%win%%astat%)&echo ^> Settings - Check for updates (u) %opreset%
 if %coloredfont%==Enabled goto ENsettingscoloredfont
 echo  1 ^> Save settings                - %savesettings%&echo  2 ^> Language                     - %language%&echo  3 ^> Windows version              - %win%&echo  4 ^> Administrator check          - %adc%&echo  5 ^> Colored font                 - %coloredfont%&echo  6 ^> Experimental settings&goto ENsettingscoloredfont1
 :ENsettingscoloredfont
-call :colorfont 07 " 1. Save settings                -"&if %savesettings%==Enabled (call :colorfont 0a " Enabled"&%S%) else (call :colorfont 0C " Disabled"&%S%)
-call :colorfont 07 " 2. Language                     - %language%"&%S%&call :colorfont 07 " 3. Windows version              - %win%"&%S%
-call :colorfont 07 " 4. Administrator check          -"&if %adc%==Enabled (call :colorfont 0a " Enabled"&%S%) else (call :colorfont 0C " Disabled"&%S%)
-call :colorfont 07 " 5. Colored font                 -"&if %coloredfont%==Enabled (call :colorfont 0a " Enabled"&%S%) else (call :colorfont 0C " Disabled"&%S%)
-call :colorfont 07 " 6. Experimental settings"&%S%
+<nul set /p="%space% 1 > Save settings                -"&if %savesettings%==Enabled (call :colorfont 0a " Enabled"&%S%) else (call :colorfont 0C " Disabled"&%S%)
+<nul set /p="%space% 2 > Language                     - %language%"&%S%&<nul set /p="%space% 3 > Windows version              - %win%"&%S%
+<nul set /p="%space% 4 > Administrator check          -"&if %adc%==Enabled (call :colorfont 0a " Enabled"&%S%) else (call :colorfont 0C " Disabled"&%S%)
+<nul set /p="%space% 5 > Colored font                 -"&if %coloredfont%==Enabled (call :colorfont 0a " Enabled"&%S%) else (call :colorfont 0C " Disabled"&%S%)
+<nul set /p="%space% 6 > Experimental settings"&%S%
 :ENsettingscoloredfont1
 call :writesettings
 %S%&%L%&%S%&echo %back% - %exit%
@@ -130,9 +128,9 @@ cls&echo ^> Experimental settings %opreset%
 if %coloredfont%==Enabled (goto ENexperimentalsettingscoloredfont)
 echo  1 ^> Auto update check            - %udc%&echo  2 ^> Sound                        - %sound%&echo  3 ^> Echo on                      - %echoon%&goto ENexperimentalsettingscoloredfont1
 :ENexperimentalsettingscoloredfont
-call :colorfont 07 " 1. Auto update check            -"&if %udc%==Enabled (call :colorfont 0C " Enabled"&%S%) else (call :colorfont 0a " Disabled"&%S%)
-call :colorfont 07 " 2. Sound                        -"&if %sound%==Default (call :colorfont 0a " Default"&%S%) else (if %sound%==Enabled (call :colorfont 0a " Enabled"&%S%) else (call :colorfont 0C " Disabled"&%S%))
-call :colorfont 07 " 3. Echo on                      -"&if %echoon%==Enabled (call :colorfont 0C " Enabled"&%S%) else (call :colorfont 0a " Disabled"&%S%)
+<nul set /p="%space% 1 > Auto update check            -"&if %udc%==Enabled (call :colorfont 0C " Enabled"&%S%) else (call :colorfont 0a " Disabled"&%S%)
+<nul set /p="%space% 2 > Sound                        -"&if %sound%==Default (call :colorfont 0a " Default"&%S%) else (if %sound%==Enabled (call :colorfont 0a " Enabled"&%S%) else (call :colorfont 0C " Disabled"&%S%))
+<nul set /p="%space% 3 > Echo on                      -"&if %echoon%==Enabled (call :colorfont 0C " Enabled"&%S%) else (call :colorfont 0a " Disabled"&%S%)
 :ENexperimentalsettingscoloredfont1
 call :writesettings
 %S%&%L%&%S%&echo %back% - %exit%
@@ -226,11 +224,11 @@ cls&%R% (%win%%astat%)&echo ^> Einstellungen - Nach Updates suchen (u) %opreset%
 if %coloredfont%==Aktiviert (goto DEsettingscoloredfont)
 echo  1 ^> Einstellungen speichern      - %savesettings%&echo  2 ^> Sprache                      - %language%&echo  3 ^> Windows Version              - %win%&echo  4 ^> Administrator check          - %adc%&echo  5 ^> Farbige Schrift              - %coloredfont%&echo  6 ^> Experimentelle Einstellungen&goto DEsettingscoloredfont1
 :DEsettingscoloredfont
-call :colorfont 07 " 1. Einstellungen speichern      -"&if %savesettings%==Aktiviert (call :colorfont 0a " Aktiviert"&%S%) else (call :colorfont 0C " Deaktiviert"&%S%)
-call :colorfont 07 " 2. Sprache                      - %language%"&%S%&call :colorfont 07 " 3. Windows Version              - %win%"&%S%
-call :colorfont 07 " 4. Administrator check          -"&if %adc%==Aktiviert (call :colorfont 0a " Aktiviert"&%S%) else (call :colorfont 0C " Deaktiviert"&%S%)
-call :colorfont 07 " 5. Farbige Schrift              -"&if %coloredfont%==Aktiviert (call :colorfont 0a " Aktiviert"&%S%) else (call :colorfont 0C " Deaktiviert"&%S%)
-call :colorfont 07 " 6. Experimentelle Einstellungen"&%S%
+<nul set /p="%space% 1 > Einstellungen speichern      -"&if %savesettings%==Aktiviert (call :colorfont 0a " Aktiviert"&%S%) else (call :colorfont 0C " Deaktiviert"&%S%)
+<nul set /p="%space% 2 > Sprache                      - %language%"&%S%&<nul set /p="%space% 3 > Windows Version              - %win%"&%S%
+<nul set /p="%space% 4 > Administrator check          -"&if %adc%==Aktiviert (call :colorfont 0a " Aktiviert"&%S%) else (call :colorfont 0C " Deaktiviert"&%S%)
+<nul set /p="%space% 5 > Farbige Schrift              -"&if %coloredfont%==Aktiviert (call :colorfont 0a " Aktiviert"&%S%) else (call :colorfont 0C " Deaktiviert"&%S%)
+<nul set /p="%space% 6 > Experimentelle Einstellungen"&%S%
 :DEsettingscoloredfont1
 call :writesettings
 %S%&%L%&%S%&echo %back% - %exit%
@@ -257,9 +255,9 @@ cls&echo ^> Experimentelle Einstellungen %opreset%
 if %coloredfont%==Aktiviert goto DEexperimentalsettingscoloredfont
 echo  1 ^> Auto Update check            - %udc%&echo  2 ^> Ton                          - %sound%&echo  3 ^> Echo on                      - %echoon%&goto DEexperimentalsettingscoloredfont1
 :DEexperimentalsettingscoloredfont
-call :colorfont 07 " 1. Auto Update check            -"&if %udc%==Aktiviert (call :colorfont 0C " Aktiviert"&%S%) else (call :colorfont 0a " Deaktiviert"&%S%)
-call :colorfont 07 " 2. Ton                          -"&if %sound%==Standard (call :colorfont 0a " Standard"&%S%) else (if %sound%==Aktiviert (call :colorfont 0a " Aktiviert"&%S%) else (call :colorfont 0C " Deaktiviert"&%S%))
-call :colorfont 07 " 3. Echo on                      -"&if %echoon%==Aktiviert (call :colorfont 0C " Aktiviert"&%S%) else (call :colorfont 0a " Deaktiviert"&%S%)
+<nul set /p="%space% 1 > Auto Update check            -"&if %udc%==Aktiviert (call :colorfont 0C " Aktiviert"&%S%) else (call :colorfont 0a " Deaktiviert"&%S%)
+<nul set /p="%space% 2 > Ton                          -"&if %sound%==Standard (call :colorfont 0a " Standard"&%S%) else (if %sound%==Aktiviert (call :colorfont 0a " Aktiviert"&%S%) else (call :colorfont 0C " Deaktiviert"&%S%))
+<nul set /p="%space% 3 > Echo on                      -"&if %echoon%==Aktiviert (call :colorfont 0C " Aktiviert"&%S%) else (call :colorfont 0a " Deaktiviert"&%S%)
 :DEexperimentalsettingscoloredfont1
 call :writesettings
 %S%&%L%&%S%&echo %back% - %exit%
@@ -424,11 +422,6 @@ cls&%S%&echo Updating DHCP leases and re-registering DNS names...&%S%
 ipconfig /registerdns >NUL
 cls&%S%&echo Renewing IPv4-Address...&%S%
 ipconfig /renew >NUL
-cls&%S%&echo Activating adapter...&%S%
-netsh interface set interface Ethernet disabled >NUL
-if %errorlevel% equ 0 (netsh interface set interface Ethernet enabled >NUL)
-netsh interface set interface Wi-Fi disabled >NUL
-if %errorlevel% equ 0 (netsh interface set interface Wi-Fi enabled >NUL)
 cls&%S%&echo Finished!&%NRe%
 %S%&echo If the problem is not solved yet,&echo try to restart the router and the PC.&%L%&%S%&echo %retry% - %back% - %exit%
 choice /C %ext%S2%bck%%rty% /N >NUL
@@ -468,8 +461,6 @@ if %errorlevel% equ 0 (set "ARe=") else (set "ARe=echo Please try again with adm
 cls&%S%&echo Starting audio service...&%S%
 sc start audiosrv >NUL
 if %errorlevel% equ 0 (set "ARe=") else (if %errorlevel% equ 1056 (timeout 2 /nobreak >NUL&goto ENaudiorepair2) else (set "ARe=echo Please try again with administrator rights!"))
-set process=RzSurroundVADStreamingService&call :getprocessid
-if not "%processid%"=="Es" (taskkill /T /F /PID %processid% >NUL&timeout 2 /nobreak >NUL&sc start RzSurroundVADStreamingService >NUL)
 cls&%S%&echo Finished!&%ARe%
 %S%&echo If the problem is not solved yet,&echo try to restart the PC.&%L%&%S%&echo %retry% - %back% - %exit%
 choice /C %ext%S3%bck%%rty% /N >NUL
@@ -493,8 +484,6 @@ if %errorlevel% equ 0 (set "ARe=") else (set "ARe=echo Please try again with adm
 cls&%S%&echo Starting audio service...&%S%
 sc start audiosrv >NUL
 if %errorlevel% equ 0 (set "ARe=") else (if %errorlevel% equ 1056 (timeout 1 /nobreak >NUL&goto ENaudiorepairold2) else (set "ARe=echo Please try again with administrator rights!"))
-sc query RzSurroundVADStreamingService | FIND "STATE" | FIND "RUNNING"
-if %errorlevel% equ 0 (sc stop RzSurroundVADStreamingService >NUL&timeout 2 /nobreak >NUL&sc start RzSurroundVADStreamingService >NUL)
 cls&%S%&echo Finished!&%ARe%
 %S%&echo If the problem is not solved yet,&echo try to restart the PC.&%L%&%S%&echo %retry% - %back% - %exit%
 choice /C %ext%S3%bck%%rty% /N >NUL
@@ -630,9 +619,9 @@ if exist "%windir%\cscc.dat" (set C3=Enabled) else (set C3=Disabled)
 if %coloredfont%==Enabled (goto ENSPatchcoloredfont)
 echo  1 ^> Petya/NotPetya Patch      - %C1%&echo  2 ^> Petya 2 Patch             - %C2%&echo  3 ^> BadRabbit Patch           - %C3%&goto ENSPatchcoloredfont1
 :ENSPatchcoloredfont
-call :colorfont 07 " 1. Petya & NotPetya Patch    -"&if %C1%==Enabled (call :colorfont 0a " Enabled"&%S%) else (call :colorfont 0C " Disabled"&%S%)
-call :colorfont 07 " 2. Petya 2 Patch             -"&if %C2%==Enabled (call :colorfont 0a " Enabled"&%S%) else (call :colorfont 0C " Disabled"&%S%)
-call :colorfont 07 " 3. BadRabbit Patch           -"&if %C3%==Enabled (call :colorfont 0a " Enabled"&%S%) else (call :colorfont 0C " Disabled"&%S%)
+<nul set /p="%space% 1 > Petya & NotPetya Patch    -"&if %C1%==Enabled (call :colorfont 0a " Enabled"&%S%) else (call :colorfont 0C " Disabled"&%S%)
+<nul set /p="%space% 2 > Petya 2 Patch             -"&if %C2%==Enabled (call :colorfont 0a " Enabled"&%S%) else (call :colorfont 0C " Disabled"&%S%)
+<nul set /p="%space% 3 > BadRabbit Patch           -"&if %C3%==Enabled (call :colorfont 0a " Enabled"&%S%) else (call :colorfont 0C " Disabled"&%S%)
 :ENSPatchcoloredfont1
 %S%&%L%&%S%&echo %back% - %exit%
 choice /C %bck%%ext%%se%I123%up% /N >NUL
@@ -877,11 +866,6 @@ cls&%S%&echo DHCP-Leases aktualisieren und DNS-Namen erneut registrieren...&%L%
 ipconfig /registerdns >NUL
 cls&%S%&echo IPv4-Adresse erneuern...&%L%
 ipconfig /renew >NUL
-cls&%S%&echo Adapter aktivieren...&%L%
-netsh interface set interface Ethernet disabled >NUL
-if %errorlevel% equ 0 (netsh interface set interface Ethernet enabled >NUL)
-netsh interface set interface WLAN disabled >NUL
-if %errorlevel% equ 0 (netsh interface set interface WLAN enabled >NUL)
 cls&%S%&echo Fertig!&%NRe%
 %S%&echo Falls das Problem immer noch vorhanden ist,&echo versuche den Router und PC neu zu starten.&%L%&%S%&echo %retry% - %back% - %exit%
 choice /C %ext%S2%bck%%rty% /N >NUL
@@ -921,8 +905,6 @@ if %errorlevel% equ 0 (set "ARe=") else (set "ARe=echo Bitte mit administrator r
 cls&%S%&echo Audiodienst starten...&%L%
 sc start audiosrv >NUL
 if %errorlevel% equ 0 (set "ARe=") else (if %errorlevel% equ 1056 (timeout 2 /nobreak >NUL&goto DEaudiorepair2) else (set "ARe=echo Bitte mit administrator rechten erneut versuchen!"))
-set process=RzSurroundVADStreamingService&call :getprocessid
-if not "%processid%"=="Es" (taskkill /T /F /PID %processid% >NUL&timeout 2 /nobreak >NUL&sc start RzSurroundVADStreamingService >NUL)
 cls&%S%&echo Fertig!&%ARe%
 %S%&echo Falls das Problem immer noch vorhanden ist,&echo versuche den PC neu zu starten.&%L%&%S%&echo %retry% - %back% - %exit%
 choice /C %ext%S3%bck%%rty% /N >NUL
@@ -946,8 +928,6 @@ if %errorlevel% equ 0 (set "ARe=") else (set "ARe=echo Bitte mit administrator r
 cls&%S%&echo Audiodienst starten...&%L%
 sc start audiosrv >NUL
 if %errorlevel% equ 0 (set "ARe=") else (if %errorlevel% equ 1056 (timeout 1 /nobreak >NUL&goto DEaudiorepairold2) else (set "ARe=echo Bitte mit administrator rechten erneut versuchen!"))
-sc query RzSurroundVADStreamingService | FIND "STATE" | FIND "RUNNING"
-if %errorlevel% equ 0 (sc stop RzSurroundVADStreamingService >NUL&timeout 2 /nobreak >NUL&sc start RzSurroundVADStreamingService >NUL)
 cls&%S%&echo Fertig!&%ARe%
 %S%&echo Falls das Problem immer noch vorhanden ist,&echo versuche den PC neu zu starten.&%L%&%S%&echo %retry% - %back% - %exit%
 choice /C %ext%S3%bck%%rty% /N >NUL
@@ -1083,9 +1063,9 @@ if exist "%windir%\perfc.dll" (set C1=Aktiviert) else (set C1=Deaktiviert)
 if %coloredfont%==Aktiviert (goto DESPatchcoloredfont)
 echo  1 ^> Petya/NotPetya Patch      - %C1%&echo  2 ^> Petya 2 Patch             - %C2%&echo  3 ^> BadRabbit Patch           - %C3%&goto DESPatchcoloredfont1
 :DESPatchcoloredfont
-call :colorfont 07 " 1. Petya & NotPetya Patch    -"&if %C1%==Aktiviert (call :colorfont 0a " Aktiviert"&%S%) else (call :colorfont 0C " Deaktiviert"&%S%)
-call :colorfont 07 " 2. Petya 2 Patch             -"&if %C2%==Aktiviert (call :colorfont 0a " Aktiviert"&%S%) else (call :colorfont 0C " Deaktiviert"&%S%)
-call :colorfont 07 " 3. BadRabbit Patch           -"&if %C3%==Aktiviert (call :colorfont 0a " Aktiviert"&%S%) else (call :colorfont 0C " Deaktiviert"&%S%)
+<nul set /p="%space% 1 > Petya & NotPetya Patch    -"&if %C1%==Aktiviert (call :colorfont 0a " Aktiviert"&%S%) else (call :colorfont 0C " Deaktiviert"&%S%)
+<nul set /p="%space% 2 > Petya 2 Patch             -"&if %C2%==Aktiviert (call :colorfont 0a " Aktiviert"&%S%) else (call :colorfont 0C " Deaktiviert"&%S%)
+<nul set /p="%space% 3 > BadRabbit Patch           -"&if %C3%==Aktiviert (call :colorfont 0a " Aktiviert"&%S%) else (call :colorfont 0C " Deaktiviert"&%S%)
 :DESPatchcoloredfont1
 %S%&%L%&%S%&echo %back% - %exit%
 choice /C %bck%%ext%%se%I123%up% /N >NUL
@@ -1250,8 +1230,8 @@ if not exist "%userprofile%\IconRepair\" (mkdir "%userprofile%\IconRepair\")
 pushd "%userprofile%\IconRepair\"
 if %errorlevel% neq 0 (goto colorfonterror)
 <nul set /p ".=%DEL%" > "%~2"
-findstr /v /a:%1 /R "^$" "%~2" nul
-del "%~2" > nul 2>&1
+findstr /v /a:%1 /r "^$" "%~2" nul
+del "%~2"
 exit /b
 :colorfonterror
 if %language%==Deutsch (goto DEcolorfonterror) else (goto ENcolorfonterror)
