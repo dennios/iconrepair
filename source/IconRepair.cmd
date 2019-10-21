@@ -1,6 +1,7 @@
-@echo off&mode 79,26&set V=3.3&set B=3321&set RU=2.5&set year=2019&pushd "%userprofile%"&set "settingspath="%userprofile%\IconRepair\settings.cmd""
+@echo off&mode 79,26&set V=3.3&set B=3322&set RU=2.5&set year=2019&pushd "%userprofile%"&set "settingspath="%userprofile%\IconRepair\settings.cmd""
 set L=echo ____________________________________________________________&set S=echo:&set R=title IconRepair %V%&set update=&set up=
-for /f %%A in ('"prompt $H &for %%B in (1) do rem"') do set space=%%A
+for /f %%a in ('"prompt $H &for %%b in (1) do rem"') do set space=%%a
+for /f "tokens=1,2 delims=#" %%c in ('"prompt #$H#$E# & echo on & for %%d in (1) do rem"') do (set "DEL=%%c")
 :reload
 if exist %settingspath% (call %settingspath%)
 if "%savesettings%"=="" (set savesettings=Disabled)
