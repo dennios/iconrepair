@@ -1,4 +1,4 @@
-@echo off&mode 79,26&set V=3.3&set B=3322&set RU=2.5&set year=2019&pushd "%userprofile%"&set "settingspath="%userprofile%\IconRepair\settings.cmd""
+@echo off&mode 79,26&set V=3.3&set B=3323&set RU=2.5&set year=2019&pushd "%userprofile%"&set "settingspath="%userprofile%\IconRepair\settings.cmd""
 set L=echo ____________________________________________________________&set S=echo:&set R=title IconRepair %V%&set update=&set up=
 for /f %%a in ('"prompt $H &for %%b in (1) do rem"') do set space=%%a
 for /f "tokens=1,2 delims=#" %%c in ('"prompt #$H#$E# & echo on & for %%d in (1) do rem"') do (set "DEL=%%c")
@@ -68,7 +68,7 @@ if %errorlevel% equ 3 goto changelog
 if %errorlevel% equ 4 goto reload
 if %errorlevel% equ 5 goto end
 :changelog
-cls&echo ^> Changelog&%S%&echo Version %V% (%B%)&echo  +Improved colored font&echo  +Other improvements&%S%&echo Version 3.3 (3313)&echo  +Old AudioRepair as alternative&echo  +Reload script button in about&echo  +Better loading progress&echo  +Improvements&%S%&echo Version 3.3 (3303)&echo  +New better ^& faster AudioRepair&echo  +Renamed "Options" to "Settings"&echo  +Admin indicator&echo  +Improvements&echo  +Fixes&%L%&%S%&echo %back% - %exit%
+cls&echo ^> Changelog&%S%&echo Version %V% (%B% ^& 3322)&echo  +Fixes&%S%&echo Version 3.3 (3321)&echo  +Improved colored font&echo  +Other improvements&%S%&echo Version 3.3 (3313)&echo  +Old AudioRepair as alternative&echo  +Reload script button in about&echo  +Better loading progress&echo  +Improvements&%S%&echo Version 3.3 (3303)&echo  +New better ^& faster AudioRepair&echo  +Renamed "Options" to "Settings"&echo  +Admin indicator&echo  +Improvements&echo  +Fixes&%L%&%S%&echo %back% - %exit%
 choice /C %bck%L%ext% /N >NUL
 if %errorlevel% equ 1 goto about
 if %errorlevel% equ 2 goto about
@@ -113,11 +113,14 @@ if %errorlevel% equ 3 goto end
 if %errorlevel% equ 4 goto ENsavesettings
 if %errorlevel% equ 5 if %language%==Deutsch (set language=English&goto settings) else (set language=Deutsch&goto settings)
 if %errorlevel% equ 6 goto ENwinversion
-if %errorlevel% equ 7 if %adc%==Enabled (set adc=Disabled&goto settings) else (set adc=Enabled&goto settings)
+if %errorlevel% equ 7 goto ENadministratorchecksettings
 if %errorlevel% equ 8 if %coloredfont%==Enabled (set coloredfont=Disabled&goto settings) else (set coloredfont=Enabled&goto settings)
 if %errorlevel% equ 9 goto ENexperimentalsettings
 if %errorlevel% equ 10 goto update
 if %errorlevel% equ 11 goto ENreset
+:ENadministratorchecksettings
+if %adc%==Enabled (set adc=Disabled) else (set adc=Enabled&if "%admin%"=="" (call :administratorcheck))
+goto settings
 :ENexperimentalsettings
 if "%opreset%"=="" (if %coloredfont%==Disabled (set re=&set opreset=) else (set re=R&set "opreset=- Reset (r)"))
 if "%opreset%"=="" (if %adc%==Enabled (set re=&set opreset=) else (set re=R&set "opreset=- Reset (r)"))
@@ -155,10 +158,9 @@ set sound=Default&set coloredfont=Disabled&set udc=Disabled&set adc=Enabled&set 
 :ENsound
 cls&%S%&echo Checking for administrator rights...&%S%
 if %adc%==Enabled (goto ENsound1)
-net session >NUL 2>&1
-if %errorlevel% equ 0 (set admin=1) else (set admin=0)
+call :administratorcheck
 :ENsound1
-if %admin% equ 0 (goto ENsounderror)
+if "%admin%"=="0" (goto ENsounderror)
 for /F "tokens=3 delims=: " %%H in ('sc query "beep" ^| findstr "        STATE"') do (if not "%%H"=="RUNNING" (set sound=Enabled) else (set sound=Disabled))
 if %sound%==Enabled (goto ENsounddisable)
 if %sound%==Disabled (goto ENsoundenable)
@@ -240,11 +242,14 @@ if %errorlevel% equ 3 goto end
 if %errorlevel% equ 4 goto DEsavesettings
 if %errorlevel% equ 5 if %language%==Deutsch (set language=English&goto settings) else (set language=Deutsch&goto settings)
 if %errorlevel% equ 6 goto DEwinversion
-if %errorlevel% equ 7 if %adc%==Aktiviert (set adc=Deaktiviert&goto settings) else (set adc=Aktiviert&goto settings)
+if %errorlevel% equ 7 goto DEadministratorchecksettings
 if %errorlevel% equ 8 if %coloredfont%==Aktiviert (set coloredfont=Deaktiviert&goto settings) else (set coloredfont=Aktiviert&goto settings)
 if %errorlevel% equ 9 goto DEexperimentalsettings
 if %errorlevel% equ 10 goto update
 if %errorlevel% equ 11 goto DEreset
+:DEadministratorchecksettings
+if %adc%==Aktiviert (set adc=Deaktiviert) else (set adc=Aktiviert&if "%admin%"=="" (call :administratorcheck))
+goto settings
 :DEexperimentalsettings
 if "%opreset%"=="" (if %coloredfont%==Deaktiviert (set re=&set opreset=) else (set re=R&set "opreset=- Zurcksetzen (r)"))
 if "%opreset%"=="" (if %adc%==Aktiviert (set re=&set opreset=) else (set re=R&set "opreset=- Zurcksetzen (r)"))
@@ -282,10 +287,9 @@ set sound=Standard&set coloredfont=Deaktiviert&set udc=Deaktiviert&set adc=Aktiv
 :DEsound
 cls&%S%&echo Prfe auf Administratorrechte...&%L%
 if %adc%==Aktiviert (goto DEsound1)
-net session >NUL 2>&1
-if %errorlevel% equ 0 (set admin=1) else (set admin=0)
+call :administratorcheck
 :DEsound1
-if %admin% equ 0 (goto DEsounderror)
+if "%admin%"=="0" (goto DEsounderror)
 for /F "tokens=3 delims=: " %%H in ('sc query "beep" ^| findstr "        STATE"') do (if not "%%H"=="RUNNING" (set sound=Aktiviert) else (set sound=Deaktiviert))
 if %sound%==Aktiviert (goto DEsounddisable)
 if %sound%==Deaktiviert (goto DEsoundenable)
@@ -335,10 +339,7 @@ set lastloc=Main&set updateloc=ENMain&set settings=Settings (s)&set se=S&set bac
 cls&echo About (a) - %settings%%update%
 %S%&echo Press the selected number to continue.&echo For more information press i!&%L%&%S%&%S%&echo  1 ^> IconRepair&echo  2 ^> NetworkRepair&echo  3 ^> AudioRepair&echo  4 ^> System options&%S%&%L%&%S%&echo %exit%
 if %udc%==Enabled (if "%np%"=="" (goto update))
-if %adc%==Disabled (set astat=&if "%admin%"=="" (set admin=0&goto ENadmincheckdisabled) else (goto ENadmincheckdisabled)) else (if not "%admin%"=="" (goto ENadmincheckdisabled))
-net session >NUL 2>&1
-if %errorlevel% equ 0 (set admin=1&set astat=/Administrator) else (set admin=0&set astat=/Restricted)
-:ENadmincheckdisabled
+if %adc%==Enabled (if "%admin%"=="" (call :administratorcheck))
 %R% (%win%%astat%)
 choice /C 1234%ext%IA%se%%up% /N >NUL
 if %errorlevel% equ 1 goto ENiconrepair
@@ -398,7 +399,7 @@ if %errorlevel% equ 3 goto end
 if %errorlevel% equ 4 goto ENMain
 if %errorlevel% equ 5 goto EN7iconrepair
 :ENnetworkrepairperm
-if %adc%==Disabled (goto ENnetworkrepair) else (if %admin% equ 1 (goto ENnetworkrepair))
+if %adc%==Disabled (goto ENnetworkrepair) else (if "%admin%"=="1" (goto ENnetworkrepair))
 cls&%S%&echo No permission! Start IconRepair as an Administrator.&echo Continue anyway?&%L%&%S%&echo %yes% - %back% - %exit%
 choice /C %ys%2%bck%%ext% /N >NUL
 if %errorlevel% equ 1 goto ENnetworkrepair
@@ -432,7 +433,7 @@ if %errorlevel% equ 3 goto end
 if %errorlevel% equ 4 goto ENMain
 if %errorlevel% equ 5 goto ENnetworkrepair1
 :ENaudiorepairperm
-if %adc%==Disabled (goto ENaudiorepair) else (if %admin% equ 1 (goto ENaudiorepair))
+if %adc%==Disabled (goto ENaudiorepair) else (if "%admin%"=="1" (goto ENaudiorepair))
 cls&%S%&echo No permission! Start IconRepair as an Administrator.&echo Continue anyway?&%L%&%S%&echo %yes% - %back% - %exit%
 choice /C %ys%3%bck%%ext% /N >NUL
 if %errorlevel% equ 1 goto ENaudiorepair
@@ -603,7 +604,7 @@ if %errorlevel% equ 1116 cls&%S%&echo No operation aborted&%L%&%S%&echo Press an
 if %errorlevel% equ 0 cls&%S%&echo Operation canceled&%L%&%S%&echo Press any key to continue.&timeout 3 >NUL&goto ENSShutdown
 cls&%S%&echo An error has occurred!&%L%&%S%&echo Press any key to continue.&timeout 3 >NUL&goto ENSShutdown
 :ENSPatchperm
-if %adc%==Disabled (goto ENSPatch) else (if %admin% equ 1 (goto ENSPatch))
+if %adc%==Disabled (goto ENSPatch) else (if "%admin%"=="1" (goto ENSPatch))
 cls&%S%&echo No permission! Start IconRepair as an Administrator.&echo Continue anyway?&%L%&%S%&echo %yes% - %back% - %exit%
 choice /C %ys%4%bck%%ext% /N >NUL
 if %errorlevel% equ 1 goto ENSPatch
@@ -750,7 +751,7 @@ if %errorlevel% equ 5 goto end
 if %errorlevel% equ 6 set sd=&set sd2=&set sda=&set sdM=&set sdM2=&goto ENSystem
 if %errorlevel% equ 7 set sd=&set sd2=&set sda=&set sdM=&set sdM2=&goto ENSScancel
 :ENSdeleteupdateperm
-if %adc%==Disabled (goto ENSdeleteupdate) else (if %admin% equ 1 (goto ENSdeleteupdate))
+if %adc%==Disabled (goto ENSdeleteupdate) else (if "%admin%"=="1" (goto ENSdeleteupdate))
 cls&%S%&echo No permission! Start IconRepair as an Administrator.&echo Continue anyway?&%L%&%S%&echo %yes% - %back% - %exit%
 choice /C %ys%5%bck%%ext% /N >NUL
 if %errorlevel% equ 1 goto ENSdeleteupdate
@@ -777,10 +778,7 @@ set lastloc=Main&set updateloc=DEMain&set settings=Einstellungen (e)&set se=E&se
 cls&echo About (a) - %settings%%update%
 %S%&echo Drcke die ausgew„hlte Nummer um fortzufahren.&echo Fr mehr Informationen i drcken!&%L%&%S%&%S%&echo  1 ^> IconRepair&echo  2 ^> NetworkRepair&echo  3 ^> AudioRepair&echo  4 ^> Systemoptionen&%S%&%L%&%S%&echo %exit%
 if %udc%==Aktiviert (if "%np%"=="" (goto update))
-if %adc%==Deaktiviert (set astat=&if "%admin%"=="" (set admin=0&goto DEadmincheckdisabled) else (goto DEadmincheckdisabled)) else (if not "%admin%"=="" (goto DEadmincheckdisabled))
-net session >NUL 2>&1
-if %errorlevel% equ 0 (set admin=1&set astat=/Administrator) else (set admin=0&set astat=/Eingeschr„nkt)
-:DEadmincheckdisabled
+if %adc%==Aktiviert (if "%admin%"=="" (call :administratorcheck))
 %R% (%win%%astat%)
 choice /C 1234%ext%IA%se%%up% /N >NUL
 if %errorlevel% equ 1 goto DEiconrepair
@@ -842,7 +840,7 @@ if %errorlevel% equ 3 goto end
 if %errorlevel% equ 4 goto DEMain
 if %errorlevel% equ 5 goto DE7iconrepair
 :DEnetworkrepairperm
-if %adc%==Deaktiviert (goto DEnetworkrepair) else (if %admin% equ 1 (goto DEnetworkrepair))
+if %adc%==Deaktiviert (goto DEnetworkrepair) else (if "%admin%"=="1" (goto DEnetworkrepair))
 cls&%S%&echo Keine Berechtigung! Starte IconRepair als Administrator.&echo Trotzdem fortfahren?&%L%&%S%&echo %yes% - %back% - %exit%
 choice /C %ys%2%bck%%ext% /N >NUL
 if %errorlevel% equ 1 goto DEnetworkrepair
@@ -876,7 +874,7 @@ if %errorlevel% equ 3 goto end
 if %errorlevel% equ 4 goto DEMain
 if %errorlevel% equ 5 goto DEnetworkrepair1
 :DEaudiorepairperm
-if %adc%==Deaktiviert (goto DEaudiorepair) else (if %admin% equ 1 (goto DEaudiorepair))
+if %adc%==Deaktiviert (goto DEaudiorepair) else (if "%admin%"=="1" (goto DEaudiorepair))
 cls&%S%&echo Keine Berechtigung! Starte IconRepair als Administrator.&echo Trotzdem fortfahren?&%L%&%S%&echo %yes% - %back% - %exit%
 choice /C %ys%3%bck%%ext% /N >NUL
 if %errorlevel% equ 1 goto DEaudiorepair
@@ -1047,7 +1045,7 @@ if %errorlevel% equ 1116 cls&%S%&echo Kein Vorgang abgebrochen!&%L%&%S%&echo Ein
 if %errorlevel% equ 0 cls&%S%&echo Vorgang abgebrochen!&%L%&%S%&echo Eine beliebige Taste drcken, um fortzufahren&timeout 3 >NUL&goto DESShutdown
 cls&%S%&echo Es ist ein Fehler aufgetreten!&%L%&%S%&echo Eine beliebige Taste drcken, um fortzufahren&timeout 3 >NUL&goto DESShutdown
 :DESPatchperm
-if %adc%==Deaktiviert (goto DESPatch) else (if %admin% equ 1 (goto DESPatch))
+if %adc%==Deaktiviert (goto DESPatch) else (if "%admin%"=="1" (goto DESPatch))
 cls&%S%&echo Keine Berechtigung! Starte IconRepair als Administrator.&echo Trotzdem fortfahren?&%L%&%S%&echo %yes% - %back% - %exit%
 choice /C %ys%4%bck%%ext% /N >NUL
 if %errorlevel% equ 1 goto DESPatch
@@ -1194,7 +1192,7 @@ if %errorlevel% equ 5 goto end
 if %errorlevel% equ 6 set sd=&set sd2=&set sda=&set sdM=&set sdM2=&goto DESystem
 if %errorlevel% equ 7 set sd=&set sd2=&set sda=&set sdM=&set sdM2=&goto DESScancel
 :DESdeleteupdateperm
-if %adc%==Deaktiviert (goto DESdeleteupdate) else (if %admin% equ 1 (goto DESdeleteupdate))
+if %adc%==Deaktiviert (goto DESdeleteupdate) else (if "%admin%"=="1" (goto DESdeleteupdate))
 cls&%S%&echo Keine Berechtigung! Starte IconRepair als Administrator.&echo Trotzdem fortfahren?&%L%&%S%&echo %yes% - %back% - %exit%
 choice /C %ys%5%bck%%ext% /N >NUL
 if %errorlevel% equ 1 goto DESdeleteupdate
@@ -1225,6 +1223,10 @@ if exist %settingspath% (echo set savesettings=%savesettings%>%settingspath%&ech
 exit /b
 :getprocessid
 for /f "tokens=2" %%m in ('tasklist /SVC /NH /FI "services eq %process%"') do (set processid=%%m)
+exit /b
+:administratorcheck
+net session >NUL 2>&1
+if %errorlevel% equ 0 (set admin=1&set astat=/Administrator) else (set admin=0&set astat=/Eingeschr„nkt)
 exit /b
 :colorfont
 if not exist "%userprofile%\IconRepair\" (mkdir "%userprofile%\IconRepair\")
