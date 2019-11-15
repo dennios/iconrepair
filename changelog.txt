@@ -1,7 +1,7 @@
-Version 3.3 (3321)
- +Fix update
+Version 3.3 (3323 & 3322)
+ +Fixes
 
-Version 3.3 (3322)
+Version 3.3 (3321)
  +Improved colored font
  +Other improvements
 
