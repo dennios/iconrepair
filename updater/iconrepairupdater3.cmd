@@ -1,10 +1,9 @@
-@echo off&title IconRepairUpdater 3.0&if "%udl%"=="" (exit /b)
-:Uload
-if "%umode%"=="" (mode 79,26) else (mode %umode%)
-echo:&if "%language%"=="Deutsch" (echo Lade Update...) else (echo Loading update...)
-:Uprocess
-tasklist /FI "ImageName eq %ufile%" | find /i "%ufile%" >NUL
-if %errorlevel% equ 0 (if not "%ufile%"=="" (timeout 2 >NUL&goto Uprocess))
-echo:&powershell.exe -c (invoke-webrequest -ContentType "application/octet-stream" '%udl%' -outfile '%urep%' -timeoutsec 3 -usebasicparsing)
-if %errorlevel% equ 0 (set ustatus=successfull) else (set ustatus=retry)
-call "%urep%"&exit
+@echo off&mode 79,26&title IconRepairUpdater 3.0&if "%iconrepairdl%"=="" (exit)
+%S%&echo %loadingupdate%
+:Udownload
+tasklist /fi "ImageName eq %iconrepairfile%" | find /i "%iconrepairfile%" >NUL
+if %errorlevel% equ 0 (if updatestat equ 0 (set updatestat=3&goto Uend) else (set updatestat=0&timeout 2 >NUL&goto Udownload))
+%S%&powershell.exe -c (invoke-webrequest -ContentType "application/octet-stream" '%iconrepairdl%' -outfile '%iconrepairloc%' -timeoutsec 3 -usebasicparsing)
+if %errorlevel% equ 0 (set updatestat=2) else (set updatestat=3)
+:Uend
+call "%iconrepairloc%"
