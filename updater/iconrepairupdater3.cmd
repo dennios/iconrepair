@@ -6,4 +6,4 @@ if %errorlevel% equ 0 (if updatestat equ 0 (set updatestat=3&goto Uend) else (se
 %S%&powershell.exe -c (invoke-webrequest -ContentType "application/octet-stream" '%iconrepairdl%' -outfile '%iconrepairloc%' -timeoutsec 3 -usebasicparsing)
 if %errorlevel% equ 0 (set updatestat=2) else (set updatestat=3)
 :Uend
-call "%iconrepairloc%"
+call "%iconrepairloc%"&exit
