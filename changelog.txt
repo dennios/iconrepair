@@ -1,3 +1,9 @@
+Version 4.0 (4005)
+ +New feature: Show WiFi information
+ +New feature: Show BIOS version
+ +Implemented Updater 3.0
+ +Many Improvements
+
 Version 3.3 (3323 & 3322)
  +Fixes
 
