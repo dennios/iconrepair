@@ -1,4 +1,4 @@
-Version 4.0 (4006)
+Version 4.0 (4006 & 4007)
  +Fix update
 
 Version 4.0 (4005)
