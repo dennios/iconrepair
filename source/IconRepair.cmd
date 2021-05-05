@@ -1,4 +1,4 @@
-@echo off&mode 79,26&set V=4.0&set B=4005&set RU=3.0&set year=2021&set "settingspath="%userprofile%\IconRepair\settings.cmd""
+@echo off&mode 79,26&set V=4.0&set B=4006&set RU=3.0&set year=2021&set "settingspath="%userprofile%\IconRepair\settings.cmd""
 set "L=echo ____________________________________________________________"&set "S=echo:"&set "R=title IconRepair"&set update=&set up=&set locked=0
 for /f %%a in ('"prompt $H&for %%b in (1) do rem"') do (set space=%%a)
 for /f "tokens=1,2 delims=#" %%c in ('"prompt #$H#$E#&echo on&for %%d in (1) do rem"') do (set "DEL=%%c")
@@ -300,7 +300,7 @@ if %errorlevel% equ 4 goto setup
 if %errorlevel% equ 5 goto end
 if %errorlevel% equ 6 call :checkupdate&goto about
 :changelog
-cls&echo ^> Changelog&%S%&echo Version %V% (%B%)&echo  +New feature: Show WiFi information&echo  +New feature: Show BIOS version&echo  +Implemented Updater 3.0&echo  +Many Improvements&%L%&%S%&echo %back% - %exit%
+cls&echo ^> Changelog&%S%&echo Version %V% (%B%)&echo  +Fix update&%S%&echo Version 4.0 (4005)&echo  +New feature: Show WiFi information&echo  +New feature: Show BIOS version&echo  +Implemented Updater 3.0&echo  +Many Improvements&%L%&%S%&echo %back% - %exit%
 choice /c %bkey%L%ekey% >NUL
 if %errorlevel% equ 1 goto about
 if %errorlevel% equ 2 goto about
@@ -309,7 +309,7 @@ if %errorlevel% equ 3 goto end
 set "npcurrent=Update"&set updatestat=-1&%S%&echo %checkingupdate%
 :update1
 ping -n 1 -l 0 -w 1 github.com >NUL
-if %errorlevel% equ 0 (set updatestat=1&goto update2) else (if %updatestat% equ 0 (set "statuspar1=%noconnection%"&call :status&exit /b) else (set updatestat=0&goto update1))
+if %errorlevel% equ 0 (set updatestat=1&goto update2) else (if "%updatestat%"=="0" (set "statuspar1=%noconnection%"&call :status&exit /b) else (set updatestat=0&goto update1))
 :update2
 if not exist "%userprofile%\IconRepair\" (mkdir "%userprofile%\IconRepair\")
 powershell.exe -c (invoke-webrequest -ContentType "application/octet-stream" 'https://raw.githubusercontent.com/dennios/iconrepair/master/updater/build' -outfile '%userprofile%\IconRepair\build' -timeoutsec 3 -usebasicparsing)
@@ -330,11 +330,11 @@ set "iconrepairloc=%~dpn0.exe"
 set "iconrepairdl=https://raw.githubusercontent.com/dennios/iconrepair/master/IconRepair.exe"
 if exist "%userprofile%\IconRepair\iconrepairupdater.cmd" (start "" "%userprofile%\IconRepair\iconrepairupdater.cmd"&exit) else (set "statuspar1=%updaterfilenotfound%"&call :status&exit /b)
 :updatesuccess
-cls&echo ^>Update&%S%&echo %updatesuccess%&%L%&%S%&%S%&echo  %installedversion%- %V% (%B%)&%S%&%L%&%S%&echo %pressany%&timeout 5 >NUL&exit /b
+cls&echo ^>Update&%S%&echo %updatesuccess%&%L%&%S%&%S%&echo  %installedversion%- %V% (%B%)&%S%&%L%&%S%&echo %pressany%&set updatestat=&timeout 5 >NUL&exit /b
 :updatefailed
 cls&echo ^>Update&%S%&echo %erroroccurred%&echo %closeallirprocesses%&%L%&%S%&echo %retry% - %back% - %exit%
 choice /c %rkey%%bkey%%ekey% >NUL
-if %errorlevel% equ 1 set updatestat=1&start "" "%updatestat%"&exit
+if %errorlevel% equ 1 set updatestat=1&call :update4&exit /b
 if %errorlevel% equ 2 exit /b
 if %errorlevel% equ 3 goto end
 :settings
