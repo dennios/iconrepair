@@ -1,4 +1,4 @@
-@echo off&mode 79,26&set V=4.0&set B=4006&set RU=3.0&set year=2021&set "settingspath="%userprofile%\IconRepair\settings.cmd""
+@echo off&mode 79,26&set V=4.0&set B=4007&set RU=3.0&set year=2021&set "settingspath="%userprofile%\IconRepair\settings.cmd""&set "iconrepairfile=%~n0.exe"&set "iconrepairloc=%~dpn0.exe"
 set "L=echo ____________________________________________________________"&set "S=echo:"&set "R=title IconRepair"&set update=&set up=&set locked=0
 for /f %%a in ('"prompt $H&for %%b in (1) do rem"') do (set space=%%a)
 for /f "tokens=1,2 delims=#" %%c in ('"prompt #$H#$E#&echo on&for %%d in (1) do rem"') do (set "DEL=%%c")
@@ -300,7 +300,7 @@ if %errorlevel% equ 4 goto setup
 if %errorlevel% equ 5 goto end
 if %errorlevel% equ 6 call :checkupdate&goto about
 :changelog
-cls&echo ^> Changelog&%S%&echo Version %V% (%B%)&echo  +Fix update&%S%&echo Version 4.0 (4005)&echo  +New feature: Show WiFi information&echo  +New feature: Show BIOS version&echo  +Implemented Updater 3.0&echo  +Many Improvements&%L%&%S%&echo %back% - %exit%
+cls&echo ^> Changelog&%S%&echo Version %V% (4006 ^& %B%)&echo  +Fix update&%S%&echo Version 4.0 (4005)&echo  +New feature: Show WiFi information&echo  +New feature: Show BIOS version&echo  +Implemented Updater 3.0&echo  +Many Improvements&%L%&%S%&echo %back% - %exit%
 choice /c %bkey%L%ekey% >NUL
 if %errorlevel% equ 1 goto about
 if %errorlevel% equ 2 goto about
@@ -325,8 +325,6 @@ if %errorlevel% equ 1 goto Update4
 if %errorlevel% equ 2 set "update= - Update (%ukey%)"&set "up=%ukey%"&exit /b
 if %errorlevel% equ 3 goto end
 :update4
-set "iconrepairfile=%~n0.exe"
-set "iconrepairloc=%~dpn0.exe"
 set "iconrepairdl=https://raw.githubusercontent.com/dennios/iconrepair/master/IconRepair.exe"
 if exist "%userprofile%\IconRepair\iconrepairupdater.cmd" (start "" "%userprofile%\IconRepair\iconrepairupdater.cmd"&exit) else (set "statuspar1=%updaterfilenotfound%"&call :status&exit /b)
 :updatesuccess
