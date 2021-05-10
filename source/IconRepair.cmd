@@ -1,11 +1,11 @@
-@echo off&mode 79,26&set V=4.0&set B=4007&set RU=3.0&set year=2021&set "settingspath="%userprofile%\IconRepair\settings.cmd""&set "iconrepairfile=%~n0.exe"&set "iconrepairloc=%~dpn0.exe"
+@echo off&mode 79,26&set V=4.0&set B=4013&set RU=3.0&set year=2021&set "settingspath="%userprofile%\IconRepair\settings.cmd""&set "iconrepairfile=%~n0.exe"&set "iconrepairloc=%~dpn0.exe"
 set "L=echo ____________________________________________________________"&set "S=echo:"&set "R=title IconRepair"&set update=&set up=&set locked=0
 for /f %%a in ('"prompt $H&for %%b in (1) do rem"') do (set space=%%a)
-for /f "tokens=1,2 delims=#" %%c in ('"prompt #$H#$E#&echo on&for %%d in (1) do rem"') do (set "DEL=%%c")
+for /f "tokens=1,2 delims=#" %%a in ('"prompt #$H#$E#&echo on&for %%b in (1) do rem"') do (set "DEL=%%a")
 :setup
 call :checksettings
 call :checklanguage
-if not %sound%==Default (%S%&echo %checkingsoundprocess%&for /f "tokens=3 delims=:" %%H in ('sc query "beep" ^| findstr "        STATE"') do (if not "%%H"=="RUNNING" (set sound=Disabled)))
+if not %sound%==Default (%S%&echo %checkingsoundprocess%&for /f "tokens=3 delims=:" %%a in ('sc query "beep" ^| findstr "        STATE"') do (if not "%%a"=="RUNNING" (set sound=Disabled)))
 if "%winver%"=="" (call :checkwinver) else (call :setwinver)
 goto main
 :checksettings
@@ -18,7 +18,7 @@ if not "%sound%"=="Disabled" (set sound=Default)
 if not "%adc%"=="Disabled" (set adc=Enabled)
 exit /b
 :checklanguage
-if "%language%"=="" (for /f "tokens=3 delims= " %%l in ('reg query "hklm\system\controlset001\control\nls\language" /v Installlanguage') do (if "%%l"=="0407" (set language=Deutsch) else (set language=English)))
+if "%language%"=="" (for /f "tokens=3 delims= " %%a in ('reg query "hklm\system\controlset001\control\nls\language" /v Installlanguage') do (if "%%a"=="0407" (set language=Deutsch) else (set language=English)))
 if "%language%"=="Deutsch" (goto checklanguageDE)
 set skey=s
 set bkey=b
@@ -141,6 +141,7 @@ set "useonlynumbers=Please use only numbers (max. 99999)."
 set "shutdowntypeset=Time set"
 set "shutdowntypeimmediately=Immediately"
 set "shutdowntypenext=In the next few minutes"
+set "smissinginterface=There is no wireless interface in this system."
 
 set "enabled=Enabled"
 set "disabled=Disabled"
@@ -268,6 +269,7 @@ set "useonlynumbers=Bitte nur Zahlen verwenden (max. 99999)."
 set "shutdowntypeset=Festgelegte Zeit"
 set "shutdowntypeimmediately=Sofort"
 set "shutdowntypenext=In den n„chsten Minuten"
+set "smissinginterface=Im System ist keine Drahtlosschnittstelle vorhanden."
 
 set "enabled=Aktiviert"
 set "disabled=Deaktiviert"
@@ -275,7 +277,7 @@ set "default=Standard"
 set "ended=Beendet..."
 exit /b
 :checkwinver
-for /f "tokens=4-7 delims=[.] " %%i in ('ver') do (if %%i==Version (set winver=%%j.%%k) else (set winver=%%i.%%j))
+for /f "tokens=4-7 delims=[.] " %%a in ('ver') do (if %%a==Version (set winver=%%b.%%c) else (set winver=%%a.%%b))
 :setwinver
 if "%winver%"=="10.0" (set "win=Windows 10"&exit /b)
 if "%winver%"=="6.3" (set "win=Windows 8.1"&exit /b)
@@ -300,7 +302,7 @@ if %errorlevel% equ 4 goto setup
 if %errorlevel% equ 5 goto end
 if %errorlevel% equ 6 call :checkupdate&goto about
 :changelog
-cls&echo ^> Changelog&%S%&echo Version %V% (4006 ^& %B%)&echo  +Fix update&%S%&echo Version 4.0 (4005)&echo  +New feature: Show WiFi information&echo  +New feature: Show BIOS version&echo  +Implemented Updater 3.0&echo  +Many Improvements&%L%&%S%&echo %back% - %exit%
+cls&echo ^> Changelog&%S%&echo Version %V% (%B%)&echo  +Improvements&echo  +Fixes&%S%&echo Version %V% (4006 ^& 4007)&echo  +Fix update&%S%&echo Version 4.0 (4005)&echo  +New feature: Show WiFi information&echo  +New feature: Show BIOS version&echo  +Implemented Updater 3.0&echo  +Many Improvements&%L%&%S%&echo %back% - %exit%
 choice /c %bkey%L%ekey% >NUL
 if %errorlevel% equ 1 goto about
 if %errorlevel% equ 2 goto about
@@ -436,7 +438,7 @@ goto winversion
 set "npcurrent=%optionsound%"
 if %adc%==Disabled (cls&echo ^> %npcurrent%&%S%&echo %checkingadministratorrights%&call :administratorcheck)
 if "%adminswitch%"=="0" (goto sounderror)
-for /F "tokens=3 delims=: " %%H in ('sc query "beep" ^| findstr "        STATE"') do (if not "%%H"=="RUNNING" (set sound=Disabled))
+for /F "tokens=3 delims=: " %%a in ('sc query "beep" ^| findstr "        STATE"') do (if not "%%a"=="RUNNING" (set sound=Disabled))
 if %sound%==Default (goto sounddisable)
 :soundenable
 cls&echo ^> %npcurrent%&%S%&echo %esenablesound%
@@ -702,7 +704,9 @@ rd /s /q "%systemroot%\SoftwareDistribution\Download" >NUL
 if %errorlevel% equ 0 (if %startwuauserv% equ 1 (cls&echo ^> %npcurrent%&%S%&echo %startingwuauserv%&sc start wuauserv >NUL)) else (if %startwuauserv% equ 1 (cls&echo ^> %npcurrent%&%S%&echo %startingwuauserv%&sc start wuauserv >NUL&goto Serror) else (goto Serror))
 set "repairstatus=%finished%"&call :finish&goto system
 :Sshowbiosversion
-cls&echo ^> %sshowbios% - %settings%&%S%&wmic bios get smbiosbiosversion&%L%&%S%&echo %back% - %exit%
+cls&echo ^> %sshowbios% - %settings%&%S%
+for /f "delims=" %%a in ('wmic bios get smbiosbiosversion ^| findstr /r /v "^$"') do (echo %%a)
+%L%&%S%&echo %back% - %exit%
 choice /c %ekey%5%bkey%%skey% >NUL
 if %errorlevel% equ 1 goto end
 if %errorlevel% equ 2 goto end
@@ -712,16 +716,19 @@ goto Sshowbiosversion
 :Sshowwifiinfo
 cls&echo ^> %sshowwifi%&%S%&echo %schoosewifi%&%L%&%S%&set numbers=0&set choices=
 setLocal EnableDelayedExpansion
-for /f "skip=2 tokens=5*" %%A in ('netsh wlan show profiles') do (set /a numbers+=1&set int!numbers!=%%B&set choices=!choices!!numbers!&echo  !numbers! ^> %%B)
+for /f "skip=2 tokens=5*" %%a in ('netsh wlan show profiles') do (set /a numbers+=1&set int!numbers!=%%b&set choices=!choices!!numbers!&echo  !numbers! ^> %%b)
+if !numbers! equ 0 (cls&echo ^> %sshowwifi%&%S%&echo %smissinginterface%&%L%&timeout 5 >NUL&goto system)
 %L%&%S%&echo %back%&%S%
 set /p ifn="> "
-if /i "%ifn%"=="%bkey%" setLocal DisableDelayedExpansion&goto system
+if /i "%ifn%"=="%bkey%" (setLocal DisableDelayedExpansion&goto system)
 echo %ifn%| findstr /r "^[0-9]*$" >NUL
 if %errorlevel% neq 0 (goto Sshowwifiinfo)
-set profile=!int%ifn%!
+if %ifn% gtr !numbers! (goto Sshowwifiinfo)
+if %ifn% equ 0 (goto Sshowwifiinfo)
+set "profile=!int%ifn%!"
 setLocal DisableDelayedExpansion
 cls&echo ^> %sshowwifi%&%S%
-netsh wlan show profile "%profile%" key=clear
+for /f "skip=20 tokens=1* delims=" %%a in ('netsh wlan show profile "%profile%" key^=clear') do (echo %%a)
 %L%&%S%&echo %back% - %exit%
 choice /c %ekey%6%bkey% >NUL
 if %errorlevel% equ 1 goto end
@@ -757,7 +764,7 @@ if not exist %settingspath% (echo >%settingspath%)
 if exist %settingspath% (echo set savesettings=%savesettings%>%settingspath%&echo set language=%language%>>%settingspath%&echo set winver=%winver%>>%settingspath%&echo set adc=%adc%>>%settingspath%&echo set udc=%udc%>>%settingspath%&echo set coloredfont=%coloredfont%>>%settingspath%&echo set sound=%sound%>>%settingspath%) else (goto colorfonterror)
 exit /b
 :getprocessid
-for /f "tokens=2" %%m in ('tasklist /svc /nh /fi "services eq %process%"') do (set processid=%%m)
+for /f "tokens=2" %%a in ('tasklist /svc /nh /fi "services eq %process%"') do (set processid=%%a)
 exit /b
 :administratorcheck
 net session >NUL 2>&1
