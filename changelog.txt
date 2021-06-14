@@ -1,3 +1,7 @@
+Version 4.0 (4021)
+ +Removed changelog inside IconRepair
+ +Fixes
+
 Version 4.0 (4013)
  +Improvements
  +Fixes
