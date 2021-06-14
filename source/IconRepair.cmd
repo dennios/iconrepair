@@ -1,4 +1,4 @@
-@echo off&mode 79,26&set V=4.0&set B=4013&set RU=3.0&set year=2021&set "settingspath="%userprofile%\IconRepair\settings.cmd""&set "iconrepairfile=%~n0.exe"&set "iconrepairloc=%~dpn0.exe"
+@echo off&mode 79,26&set V=4.0&set B=4021&set RU=3.0&set year=2021&set "settingspath="%userprofile%\IconRepair\settings.cmd""&set "iconrepairfile=%~n0.exe"&set "iconrepairloc=%~dpn0.exe"
 set "L=echo ____________________________________________________________"&set "S=echo:"&set "R=title IconRepair"&set update=&set up=&set locked=0
 for /f %%a in ('"prompt $H&for %%b in (1) do rem"') do (set space=%%a)
 for /f "tokens=1,2 delims=#" %%a in ('"prompt #$H#$E#&echo on&for %%b in (1) do rem"') do (set "DEL=%%a")
@@ -292,21 +292,14 @@ if %errorlevel% equ 1 call :settings
 if %errorlevel% equ 2 goto end
 goto setwinver
 :about
-cls&echo ^> About - Changelog (l) - %checkforupdates%
-%S%&echo Version %V%&echo Build %B%&echo Re. Updater %RU%&echo Year %year%&%S%&echo Reload (r)&%S%&echo by dennios&echo https://github.com/dennios/iconrepair/&%L%&%S%&echo %back% - %exit%
-choice /c %bkey%ALR%ekey%%ukey% >NUL
+cls&echo ^> About - Reload (r) - %checkforupdates%
+%S%&echo Version %V%&echo Build %B%&echo Re. Updater %RU%&echo Year %year%&%S%&echo by dennios&echo https://github.com/dennios/iconrepair/&%L%&%S%&echo %back% - %exit%
+choice /c %bkey%AR%ekey%%ukey% >NUL
 if %errorlevel% equ 1 goto main
 if %errorlevel% equ 2 goto main
-if %errorlevel% equ 3 goto changelog
-if %errorlevel% equ 4 goto setup
-if %errorlevel% equ 5 goto end
-if %errorlevel% equ 6 call :checkupdate&goto about
-:changelog
-cls&echo ^> Changelog&%S%&echo Version %V% (%B%)&echo  +Improvements&echo  +Fixes&%S%&echo Version %V% (4006 ^& 4007)&echo  +Fix update&%S%&echo Version 4.0 (4005)&echo  +New feature: Show WiFi information&echo  +New feature: Show BIOS version&echo  +Implemented Updater 3.0&echo  +Many Improvements&%L%&%S%&echo %back% - %exit%
-choice /c %bkey%L%ekey% >NUL
-if %errorlevel% equ 1 goto about
-if %errorlevel% equ 2 goto about
-if %errorlevel% equ 3 goto end
+if %errorlevel% equ 3 goto setup
+if %errorlevel% equ 4 goto end
+if %errorlevel% equ 5 call :checkupdate&goto about
 :checkupdate
 set "npcurrent=Update"&set updatestat=-1&%S%&echo %checkingupdate%
 :update1
@@ -714,7 +707,7 @@ if %errorlevel% equ 3 goto system
 if %errorlevel% equ 4 call :settings
 goto Sshowbiosversion
 :Sshowwifiinfo
-cls&echo ^> %sshowwifi%&%S%&echo %schoosewifi%&%L%&%S%&set numbers=0&set choices=
+cls&echo ^> %sshowwifi% - %settings%&%S%&echo %schoosewifi%&%L%&%S%&set numbers=0&set choices=
 setLocal EnableDelayedExpansion
 for /f "skip=2 tokens=5*" %%a in ('netsh wlan show profiles') do (set /a numbers+=1&set int!numbers!=%%b&set choices=!choices!!numbers!&echo  !numbers! ^> %%b)
 if !numbers! equ 0 (cls&echo ^> %sshowwifi%&%S%&echo %smissinginterface%&%L%&timeout 5 >NUL&goto system)
@@ -730,31 +723,39 @@ setLocal DisableDelayedExpansion
 cls&echo ^> %sshowwifi%&%S%
 for /f "skip=20 tokens=1* delims=" %%a in ('netsh wlan show profile "%profile%" key^=clear') do (echo %%a)
 %L%&%S%&echo %back% - %exit%
-choice /c %ekey%6%bkey% >NUL
+choice /c %ekey%6%bkey%%skey% >NUL
 if %errorlevel% equ 1 goto end
 if %errorlevel% equ 2 goto end
 if %errorlevel% equ 3 goto Sshowwifiinfo
+if %errorlevel% equ 4 call :settings
+goto Sshowwifiinfo
 :status
 if "%noswitch%"=="true" (set noswitch=false&echo %statuspar1%&exit /b)
 cls&echo ^> %npcurrent%&%S%&echo %statuspar1%&%L%&%S%&echo %pressany%&timeout 5 >NUL&set statuspar1=&exit /b
 :finish
-cls&echo ^> %npcurrent%&%S%&echo %repairstatus%&%S%&echo %tryrestartpc%&%L%&%S%&echo %back% - %exit%
-choice /c %ekey%S12345%bkey% >NUL
+cls&echo ^> %npcurrent% - %settings%&%S%&echo %repairstatus%&%S%&echo %tryrestartpc%&%L%&%S%&echo %back% - %exit%
+choice /c %ekey%S12345%bkey%%skey% >NUL
 if %errorlevel% equ 1 goto end
 if %errorlevel% equ 2 goto end
 if %errorlevel% equ 3 goto end
 if %errorlevel% equ 4 goto end
 if %errorlevel% equ 5 goto end
-if %errorlevel% equ 6 exit /b
+if %errorlevel% equ 6 goto end
+if %errorlevel% equ 7 goto end
+if %errorlevel% equ 8 exit /b
+if %errorlevel% equ 9 call :settings
+goto finish
 :nopermission
-cls&echo ^> %npcurrent%&%S%&echo %nopermission%&echo %nopermissioncontinueanyway%&%L%&%S%&echo %yes% - %back% - %exit%
-choice /c %ykey%234%bkey%%ekey% >NUL
+cls&echo ^> %npcurrent% - %settings%&%S%&echo %nopermission%&echo %nopermissioncontinueanyway%&%L%&%S%&echo %yes% - %back% - %exit%
+choice /c %ykey%234%bkey%%ekey%%skey% >NUL
 if %errorlevel% equ 1 set locked=0&exit /b
 if %errorlevel% equ 2 set locked=0&exit /b
 if %errorlevel% equ 3 set locked=0&exit /b
 if %errorlevel% equ 4 set locked=0&exit /b
 if %errorlevel% equ 5 set locked=1&exit /b
 if %errorlevel% equ 6 goto end
+if %errorlevel% equ 7 call :settings
+goto nopermission
 :end
 cls&%S%&echo %ended%&timeout 2 >NUL&exit
 :writesettings
