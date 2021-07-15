@@ -1,3 +1,9 @@
+Version 4.1 (4102)
+ +Improved NetworkRepair
+ +Improved AudioRepair
+ +Other improvements
+ +Fixes
+
 Version 4.0 (4021)
  +Removed changelog inside IconRepair
  +Fixes
