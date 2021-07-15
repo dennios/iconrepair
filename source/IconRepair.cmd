@@ -1,11 +1,11 @@
-@echo off&mode 79,26&set V=4.0&set B=4021&set RU=3.0&set year=2021&set "settingspath="%userprofile%\IconRepair\settings.cmd""&set "iconrepairfile=%~n0.exe"&set "iconrepairloc=%~dpn0.exe"
+@echo off&mode 79,26&set V=4.1&set B=4102&set RU=3.0&set year=2021&set "settingspath="%userprofile%\IconRepair\settings.cmd""&set "iconrepairfile=%~n0.exe"&set "iconrepairloc=%~dpn0.exe"
 set "L=echo ____________________________________________________________"&set "S=echo:"&set "R=title IconRepair"&set update=&set up=&set locked=0
 for /f %%a in ('"prompt $H&for %%b in (1) do rem"') do (set space=%%a)
 for /f "tokens=1,2 delims=#" %%a in ('"prompt #$H#$E#&echo on&for %%b in (1) do rem"') do (set "DEL=%%a")
 :setup
 call :checksettings
 call :checklanguage
-if not %sound%==Default (%S%&echo %checkingsoundprocess%&for /f "tokens=3 delims=:" %%a in ('sc query "beep" ^| findstr "        STATE"') do (if not "%%a"=="RUNNING" (set sound=Disabled)))
+if not "%sound%"=="Default" (sc query beep | FIND "STATE" | FIND "STOPPED"&if %errorlevel% equ 0 (set sound=Disabled))
 if "%winver%"=="" (call :checkwinver) else (call :setwinver)
 goto main
 :checksettings
@@ -102,7 +102,9 @@ set "nrreleasing=Releasing IP-Address..."
 set "nremptycache=Empty DNS cache..."
 set "nrupdateingdhcp=Updating DHCP leases and re-registering DNS..."
 set "nrrenewing=Renewing IP-Address..."
-set "runaudiorepair=Run AudioRepair (v2)?&echo Press o to run AudioRepair (v1).&%S%&echo  Audio problems could be solved by restarting all&echo  audio drivers."
+set "runaudiorepair=Run AudioRepair (v2)?&%S%&echo  Audio problems could be solved by restarting all&echo  audio drivers."
+set "switchaudiorepairv1=Switch to AudioRepair v1 ^(a^)"
+set "switchaudiorepairv2=Switch to AudioRepair v2 ^(a^)"
 set "arstoppingaudioservice=Stopping audio service..."
 set "arstoppingaudioendpointbuilder=Stopping AudioEndpointBuilder..."
 set "arstartingaudioservice=Starting audio service..."
@@ -142,6 +144,7 @@ set "shutdowntypeset=Time set"
 set "shutdowntypeimmediately=Immediately"
 set "shutdowntypenext=In the next few minutes"
 set "smissinginterface=There is no wireless interface in this system."
+set "startncpa=All network interfaces are disabled.&echo Open network interface settings?"
 
 set "enabled=Enabled"
 set "disabled=Disabled"
@@ -197,7 +200,7 @@ set "pressset=Um Einstellungen zu „ndern muss die zugeh”rige Nummer&echo gedrck
 set "optionsavesettings=Einstellungen speichern      "
 set "optionlanguage=Sprache                      "
 set "optionwindowsversion=Windows Version              "
-set "optionadc=Administrator check          "
+set "optionadc=Administrator Check          "
 set "optioncoloredfont=Farbige Schrift              "
 set "experimentalsettings=Experimentelle Einstellungen"
 set "reset=Zurcksetzen"
@@ -230,7 +233,9 @@ set "nrreleasing=IP-Adresse freigeben..."
 set "nremptycache=DNS Cache leeren..."
 set "nrupdateingdhcp=DHCP-Leases aktualisieren und DNS erneut registrieren..."
 set "nrrenewing=IP-Adresse erneuern..."
-set "runaudiorepair=AudioRepair v2 ausfhren?&echo Drcke a, um AudioRepair v1 auszufhren.&%S%&echo  Audioprobleme k”nnten durch einen Neustart der&echo  Audiotreiber behoben werden."
+set "runaudiorepair=AudioRepair ausfhren?&%S%&echo  Audioprobleme k”nnten durch einen Neustart der&echo  Audiotreiber behoben werden."
+set "switchaudiorepairv1=Zu AudioRepair v1 wechseln ^(a^)"
+set "switchaudiorepairv2=Zu AudioRepair v2 wechseln ^(a^)"
 set "arstoppingaudioservice=Audiodienst beenden..."
 set "arstoppingaudioendpointbuilder=AudioEndpointBuilder beenden..."
 set "arstartingaudioservice=Audiodienst starten..."
@@ -270,6 +275,7 @@ set "shutdowntypeset=Festgelegte Zeit"
 set "shutdowntypeimmediately=Sofort"
 set "shutdowntypenext=In den n„chsten Minuten"
 set "smissinginterface=Im System ist keine Drahtlosschnittstelle vorhanden."
+set "startncpa=Alle Netzwerkadapter sind deaktiviert.&echo Sollen die Netzwerkeinstellungen geöffnet werden?"
 
 set "enabled=Aktiviert"
 set "disabled=Deaktiviert"
@@ -364,7 +370,7 @@ if %errorlevel% equ 6 goto winversion
 if %errorlevel% equ 7 if %adc%==Enabled (set adc=Disabled) else (set adc=Enabled)
 if %errorlevel% equ 8 if %coloredfont%==Enabled (set coloredfont=Disabled) else (set coloredfont=Enabled)
 if %errorlevel% equ 9 goto experimentalsettings
-if %errorlevel% equ 10 goto reset
+if %errorlevel% equ 10 call :reset
 goto settings
 :experimentalsettings
 call :writesettings
@@ -394,15 +400,15 @@ if %errorlevel% equ 3 goto end
 if %errorlevel% equ 4 if %udc%==Enabled (set udc=Disabled) else (set udc=Enabled&set updatestat=)
 if %errorlevel% equ 5 goto sound
 if %errorlevel% equ 6 if %echoon%==Enabled (@echo off&set echoon=Disabled) else (@echo on&set echoon=Enabled)
-if %errorlevel% equ 7 goto reset
+if %errorlevel% equ 7 call :reset
 goto experimentalsettings
 :reset
 cls&echo ^> %reset%&%S%&echo %resetsetq%&%S%
 if %coloredfont%==Enabled (call :colorfont 0C "%note%"&echo : %importantsettingsdeleted%) else (echo %note%: %importantsettingsdeleted%)
 %L%&%S%&echo %yes% - %back% - %exit%
 choice /c %ykey%%bkey%%ekey% >NUL
-if %errorlevel% equ 1 set savesettings=Disabled&set adc=Enabled&set coloredfont=Disabled&set udc=Disabled&set sound=Default&set echoon=Disabled&del /f /q %settingspath%&goto settings
-if %errorlevel% equ 2 goto settings
+if %errorlevel% equ 1 set savesettings=Disabled&set adc=Enabled&set coloredfont=Disabled&set udc=Disabled&set sound=Default&set echoon=Disabled&del /f /q %settingspath%&exit /b
+if %errorlevel% equ 2 exit /b
 if %errorlevel% equ 3 goto end
 :savesettingsdisable
 cls&echo ^> %optionsavesettings%&%S%&echo %disablesavesettingsq%&%S%
@@ -431,8 +437,8 @@ goto winversion
 set "npcurrent=%optionsound%"
 if %adc%==Disabled (cls&echo ^> %npcurrent%&%S%&echo %checkingadministratorrights%&call :administratorcheck)
 if "%adminswitch%"=="0" (goto sounderror)
-for /F "tokens=3 delims=: " %%a in ('sc query "beep" ^| findstr "        STATE"') do (if not "%%a"=="RUNNING" (set sound=Disabled))
-if %sound%==Default (goto sounddisable)
+sc query beep | FIND "STATE" | FIND "STOPPED"
+if %errorlevel% equ 0 (goto soundenable) else (goto sounddisable)
 :soundenable
 cls&echo ^> %npcurrent%&%S%&echo %esenablesound%
 if %savesettings%==Enabled (sc config beep start=auto >NUL)
@@ -450,6 +456,7 @@ if %coloredfont%==Enabled (call :colorfont 0C "%note%"&echo : %notesettingadmin%
 %L%&%S%&echo %pressany%&timeout 5 >NUL&goto settings
 :main
 %R% (%win%%astat%)
+set "npcurrent=Main"
 if "%updatestat%"=="2" (call :updatesuccess) else (if "%updatestat%"=="3" (call :updatefailed))
 cls&echo About (a) - %settings%%update%
 %S%&echo %pressselected%&%L%&%S%&%S%&echo  1 ^> IconRepair&echo  2 ^> NetworkRepair&echo  3 ^> AudioRepair&echo  4 ^> System&%S%&%L%&%S%&echo %exit%
@@ -497,8 +504,7 @@ if %errorlevel% neq 0 (set "repairstatus=%tryagainadmin%") else (set "repairstat
 cls&echo ^> %npcurrent%&%S%&echo %startingexplorer%&start explorer.exe
 call :finish&goto main
 :networkrepair
-set "npcurrent=NetworkRepair"
-if %adc%==Enabled (if not "%adminswitch%"=="1" (call :nopermission))
+if not "%npcurrent%"=="NetworkRepair" (set "npcurrent=NetworkRepair"&if %adc%==Enabled (if not "%adminswitch%"=="1" (call :nopermission)))
 if %locked% equ 1 (goto main)
 cls&echo ^> %npcurrent% - %settings%&%S%&echo %runnetworkrepair%&%L%&%S%&echo %yes% - %back% - %exit%
 choice /c %ykey%2%bkey%%ekey%%skey% >NUL
@@ -520,53 +526,72 @@ cls&echo ^> %npcurrent%&%S%&echo %nrrenewing%
 ipconfig /renew >NUL
 if %errorlevel% neq 0 (set "repairstatus=%tryagainadmin%") else (set "repairstatus=%successfull%")
 ipconfig /renew6 >NUL
+netsh interface show interface | FIND "Aktiviert" || netsh interface show interface | FIND "Enabled"
+if %errorlevel% equ 1 (goto networkrepair2)
 call :finish&goto main
+:networkrepair2
+cls&echo ^> %npcurrent% - %settings%&%S%&echo %startncpa%&%L%&%S%&echo %yes% - %back% - %exit%
+choice /c %ekey%S2%ykey%%bkey%%skey% >NUL
+if %errorlevel% equ 1 goto end
+if %errorlevel% equ 2 goto end
+if %errorlevel% equ 3 goto end
+if %errorlevel% equ 4 ncpa.cpl&goto main
+if %errorlevel% equ 5 goto main
+if %errorlevel% equ 6 call :settings
+goto networkrepair2
 :audiorepair
-set "npcurrent=AudioRepair"
-if %adc%==Enabled (if not "%adminswitch%"=="1" (call :nopermission))
+if not "%npcurrent%"=="AudioRepair" (set "npcurrent=AudioRepair"&if %adc%==Enabled (if not "%adminswitch%"=="1" (call :nopermission)))
 if %locked% equ 1 (goto main)
-cls&echo ^> %npcurrent% - %settings%&%S%&echo %runaudiorepair%&%L%&%S%&echo %yes% - %back% - %exit%
-choice /c %ykey%3%bkey%%ekey%%skey% >NUL
-if %errorlevel% equ 1 goto audiorepair1
-if %errorlevel% equ 2 goto audiorepair1
+if "%arv%"=="" (set arv=2)
+cls&echo ^> %npcurrent% v%arv% - %settings%&%S%&echo %runaudiorepair%&%S%&if %arv%==2 (echo %switchaudiorepairv1%) else (echo %switchaudiorepairv2%)
+%L%&%S%&echo %yes% - %back% - %exit%
+choice /c %ykey%3%bkey%%ekey%%skey%a >NUL
+if %errorlevel% equ 1 if %arv% equ 2 (goto audiorepair1) else (goto audiorepairold1)
+if %errorlevel% equ 2 if %arv% equ 2 (goto audiorepair1) else (goto audiorepairold1)
 if %errorlevel% equ 3 goto main
 if %errorlevel% equ 4 goto end
 if %errorlevel% equ 5 call :settings
+if %errorlevel% equ 6 if %arv% equ 2 (set arv=1) else (set arv=2)
 goto audiorepair
 :audiorepair1
-cls&echo ^> %npcurrent%&%S%&echo %arstoppingaudioservice%
+cls&echo ^> %npcurrent% v%arv%&%S%&echo %arstoppingaudioservice%
 set process=audiosrv&call :getprocessid
-if "%processid%"=="Es" (goto audiorepair2) else (if "%processid%"=="" (cls&echo ^> %npcurrent%&%S%&echo %erroroccurred%&echo %arerrorusearold%&%L%&%S%&echo %pressany%&timeout 5 >NUL&goto audiorepair))
+if "%processid%"=="Es" (goto audiorepair2) else (if "%processid%"=="" (cls&echo ^> %npcurrent% v%arv%&%S%&echo %erroroccurred%&echo %arerrorusearold%&%L%&%S%&echo %pressany%&timeout 5 >NUL&goto audiorepair))
 taskkill /t /f /oid %processid% >NUL
 if %errorlevel% equ 0 (set "repairstatus=%successfull%") else (set "repairstatus=%tryagainadmin%")
-cls&echo ^> %npcurrent%&%S%&echo %arstoppingaudioendpointbuilder%
+cls&echo ^> %npcurrent% v%arv%&%S%&echo %arstoppingaudioendpointbuilder%
 set process=AudioEndpointBuilder&call :getprocessid
-if "%processid%"=="Es" (goto audiorepair2) else (if "%processid%"=="" (cls&echo ^> %npcurrent%&%S%&echo %erroroccurred%&echo %arerrorusearold%&%L%&%S%&echo %pressany%&timeout 5 >NUL&goto audiorepair))
+if "%processid%"=="Es" (goto audiorepair2) else (if "%processid%"=="" (cls&echo ^> %npcurrent% v%arv%&%S%&echo %erroroccurred%&echo %arerrorusearold%&%L%&%S%&echo %pressany%&timeout 5 >NUL&goto audiorepair))
 taskkill /t /f /pid %processid% >NUL
 if %errorlevel% equ 0 (set "repairstatus=%successfull%") else (set "repairstatus=%tryagainadmin%")
 :audiorepair2
-cls&echo ^> %npcurrent%&%S%&echo %arstartingaudioservice%
+cls&echo ^> %npcurrent% v%arv%&%S%&echo %arstartingaudioservice%
 sc start audiosrv >NUL
 if %errorlevel% equ 0 (set "repairstatus=%successfull%") else (if %errorlevel% equ 1056 (timeout 2 /nobreak >NUL&goto audiorepair2) else (set "repairstatus=%tryagainadmin%"))
+set process=audiosrv&call :getprocessid
+wmic process where "ProcessID=%process%" call setpriority "above normal" >NUL
 goto Mfinish
 :audiorepairold1
-cls&echo ^> %npcurrent%&%S%&echo %arstoppingaudioservice%
+cls&echo ^> %npcurrent% v%arv%&%S%&echo %arstoppingaudioservice%
 sc query audiosrv | FIND "STATE" | FIND "STOPPED"
 if %errorlevel% equ 0 (goto audiorepairold2)
 sc stop audiosrv >NUL
 if %errorlevel% equ 0 (set "repairstatus=%successfull%") else (set "repairstatus=%tryagainadmin%")
-cls&echo ^> %npcurrent%&%S%&echo %arstoppingaudioendpointbuilder%
+cls&echo ^> %npcurrent% v%arv%&%S%&echo %arstoppingaudioendpointbuilder%
 sc query AudioEndpointBuilder | FIND "STATE" | FIND "STOPPED"
 if %errorlevel% equ 0 (goto audiorepairold2)
 sc stop AudioEndpointBuilder >NUL
 if %errorlevel% equ 0 (set "repairstatus=%successfull%") else (set "repairstatus=%tryagainadmin%")
 :audiorepairold2
-cls&echo ^> %npcurrent%&%S%&echo %arstartingaudioservice%
+cls&echo ^> %npcurrent% v%arv%&%S%&echo %arstartingaudioservice%
 sc start audiosrv >NUL
 if %errorlevel% equ 0 (set "repairstatus=%successfull%") else (if %errorlevel% equ 1056 (timeout 1 /nobreak >NUL&goto audiorepairold2) else (set "repairstatus=%tryagainadmin%"))
+set process=audiosrv&call :getprocessid
+wmic process where "ProcessID=%process%" call setpriority "above normal" >NUL
 call :finish&goto main
 :system
-cls&echo ^> System - %settings%%update%
+set "npcurrent=System"
+cls&echo ^> %npcurrent% - %settings%%update%
 %S%&echo %pressselected%&%L%&%S%&%S%&echo  1 ^> %srestartexplorer%&echo  2 ^> %sstartwindowscmd%&echo  3 ^> %sshutdownmenu%&echo  4 ^> %sdeletewinupdate%&echo  5 ^> %sshowbios%&echo  6 ^> %sshowwifi%&%S%&%L%&%S%&echo %back% - %exit%
 choice /c %bkey%%ekey%123456%skey%%up% >NUL
 if %errorlevel% equ 1 goto main
@@ -600,8 +625,8 @@ if %errorlevel% neq 0 (set "statuspar1=%erroroccurred%"&call :status&goto system
 set "repairstatus=%finished%"&call :finish&goto system
 :Sstartcmd
 set "npcurrent=%sstartwindowscmd%"
-start "IconRepair %V% (cmd)"
-if %errorlevel% neq 0 (if %errorlevel% neq 6 (set "statuspar1=%erroroccurred%"&call :status&goto system))
+start "IconRepair %V% (cmd)" cmd.exe
+if %errorlevel% neq 0 (if %errorlevel% neq 6 (if %errorlevel% neq 4 (set "statuspar1=%erroroccurred%"&call :status&goto system)))
 goto system
 :Sshutdown
 cls&echo ^> %sshutdownmenu% - %settings%%update%&%S%&echo %pressselected%&%L%&%S%&%S%&echo  1 ^> %sinstandshutdown%&echo  2 ^> %scustomshutdown%&echo  3 ^> %sinstandrestart%&echo  4 ^> %scancelshutdown%&%S%&%L%&%S%&echo %back% - %exit%
@@ -676,8 +701,7 @@ if %errorlevel% equ 6 set sd=&goto Scancel
 :Sshutdownerror
 cls&echo ^> %npcurrent%&%S%&echo %Serrorpar1%&%L%&%S%&echo %pressany%&timeout 5 >NUL&set Serrorpar1=&goto Sshutdown
 :Sdeleteupdate
-set "npcurrent=%sdeletewinupdate%"
-if %adc%==Enabled (if not "%adminswitch%"=="1" (call :nopermission))
+if not "%npcurrent%"=="%sdeletewinupdate%" (set "npcurrent=%sdeletewinupdate%"&if %adc%==Enabled (if not "%adminswitch%"=="1" (call :nopermission)))
 if %locked% equ 1 (goto system)
 cls&echo ^> %npcurrent% - %settings%&%S%&echo %deletewinupdateq%&%L%&%S%&echo %yes% - %back% - %exit%
 choice /c %ykey%4%bkey%%ekey%%skey% >NUL
