@@ -1,11 +1,11 @@
-@echo off&mode 79,26&set V=4.1&set B=4102&set RU=3.0&set year=2021&set "settingspath="%userprofile%\IconRepair\settings.cmd""&set "iconrepairfile=%~n0.exe"&set "iconrepairloc=%~dpn0.exe"
+@echo off&mode 79,26&set V=4.1&set B=4112&set RU=3.0&set year=2021&set "settingspath="%userprofile%\IconRepair\settings.cmd""&set "iconrepairfile=%~n0.exe"&set "iconrepairloc=%~dpn0.exe"
 set "L=echo ____________________________________________________________"&set "S=echo:"&set "R=title IconRepair"&set update=&set up=&set locked=0
 for /f %%a in ('"prompt $H&for %%b in (1) do rem"') do (set space=%%a)
 for /f "tokens=1,2 delims=#" %%a in ('"prompt #$H#$E#&echo on&for %%b in (1) do rem"') do (set "DEL=%%a")
 :setup
 call :checksettings
 call :checklanguage
-if not "%sound%"=="Default" (sc query beep | FIND "STATE" | FIND "STOPPED"&if %errorlevel% equ 0 (set sound=Disabled))
+if not "%sound%"=="Default" (sc query beep | FIND "STATE" | FIND "STOPPED"&if %errorlevel% equ 0 (set sound=Disabled) else (set sound=Default))
 if "%winver%"=="" (call :checkwinver) else (call :setwinver)
 goto main
 :checksettings
@@ -73,7 +73,7 @@ set "optionadc=Administrator check          "
 set "optioncoloredfont=Colored font                 "
 set "experimentalsettings=Experimental settings"
 set "reset=Reset"
-set "optionudc=Auto update check            "
+set "optionudc=Update check                 "
 set "optionsound=Sound                        "
 set "optionechoon=Echo on                      "
 
@@ -94,7 +94,7 @@ set "irclearingiconcache=Clearing icon cache..."
 set "startingexplorer=Starting explorer.exe..."
 set "finished=Finished!"
 set "successfull=Successfull!"
-set "tryrestartpc=The PC should be rebooted&echo if the problem still persists."
+set "tryrestartpc=Please consider rebooting this PC."
 set "tryagainadmin=Please try again with administrator permissions!"
 set "nopermissioncontinueanyway=IconRepair should be started as an Administrator.&%S%&echo Continue anyway?"
 set "runnetworkrepair=Run NetworkRepair?&%S%&echo  Network disconnects could be solved by renewing&echo  the network connection."
@@ -145,6 +145,7 @@ set "shutdowntypeimmediately=Immediately"
 set "shutdowntypenext=In the next few minutes"
 set "smissinginterface=There is no wireless interface in this system."
 set "startncpa=All network interfaces are disabled.&echo Open network interface settings?"
+set "processunavailable=The required process is not responding."
 
 set "enabled=Enabled"
 set "disabled=Disabled"
@@ -196,7 +197,7 @@ set "updatesuccess=IconRepair wurde erfolgreich geupdatet."
 set "closeallirprocesses=Bitte beende alle IconRepair Prozesse&echo und versuche es erneut!"
 
 set "settingstop=Einstellungen"
-set "pressset=Um Einstellungen zu „ndern muss die zugeh”rige Nummer&echo gedrckt werden."
+set "pressset=Drcke eine zugeh”rige Nummer um Einstellungen zu „ndern."
 set "optionsavesettings=Einstellungen speichern      "
 set "optionlanguage=Sprache                      "
 set "optionwindowsversion=Windows Version              "
@@ -204,7 +205,7 @@ set "optionadc=Administrator Check          "
 set "optioncoloredfont=Farbige Schrift              "
 set "experimentalsettings=Experimentelle Einstellungen"
 set "reset=Zurcksetzen"
-set "optionudc=Auto Update check            "
+set "optionudc=Update Check                 "
 set "optionsound=Ton                          "
 set "optionechoon=Echo on                      "
 
@@ -225,7 +226,7 @@ set "irclearingiconcache=Iconcache l”schen..."
 set "startingexplorer=explorer.exe starten..."
 set "finished=Fertig!"
 set "successfull=Erfolgreich!"
-set "tryrestartpc=Falls das Problem noch vorhanden ist,&echo muss m”glicherweise der PC neu gestartet werden."
+set "tryrestartpc=Falls m”glich, sollte dieser PC neu gestartet werden."
 set "tryagainadmin=Bitte mit Administratorrechten erneut versuchen!"
 set "nopermissioncontinueanyway=IconRepair sollte als Administrator gestartet werden.&%S%&echo Trotzdem fortfahren?"
 set "runnetworkrepair=NetworkRepair ausfhren?&%S%&echo  Netzwerkunterbrechungen k”nnten behoben werden, indem die&echo  Netzwerkverbindung erneuert wird."
@@ -275,7 +276,8 @@ set "shutdowntypeset=Festgelegte Zeit"
 set "shutdowntypeimmediately=Sofort"
 set "shutdowntypenext=In den n„chsten Minuten"
 set "smissinginterface=Im System ist keine Drahtlosschnittstelle vorhanden."
-set "startncpa=Alle Netzwerkadapter sind deaktiviert.&echo Sollen die Netzwerkeinstellungen geöffnet werden?"
+set "startncpa=Alle Netzwerkadapter sind deaktiviert.&echo Sollen die Netzwerkeinstellungen ge”ffnet werden?"
+set "processunavailable=Der ben”tigte Prozess reagiert nicht."
 
 set "enabled=Aktiviert"
 set "disabled=Deaktiviert"
@@ -443,17 +445,19 @@ if %errorlevel% equ 0 (goto soundenable) else (goto sounddisable)
 cls&echo ^> %npcurrent%&%S%&echo %esenablesound%
 if %savesettings%==Enabled (sc config beep start=auto >NUL)
 sc start beep >NUL
-if %errorlevel% equ 0 (set sound=Default&goto experimentalsettings) else (goto sounderror)
+if %errorlevel% equ 0 (set sound=Default&goto experimentalsettings) else (goto processerror)
 :sounddisable
 cls&echo ^> %npcurrent%&%S%&echo %esdisablesound%
-sc stop beep >NUL
-if %errorlevel% neq 0 (goto sounderror)
 if %savesettings%==Enabled (sc config beep start=disabled >NUL)
-set sound=Disabled&goto experimentalsettings
+set sound=Disabled
+sc stop beep >NUL
+if %errorlevel% equ 0 (goto experimentalsettings) else (goto processerror)
 :sounderror
 cls&echo ^> %npcurrent%&%S%&echo %nopermission%&%S%
 if %coloredfont%==Enabled (call :colorfont 0C "%note%"&echo : %notesettingadmin%) else (echo %note%: %notesettingadmin%)
-%L%&%S%&echo %pressany%&timeout 5 >NUL&goto settings
+%L%&%S%&echo %pressany%&timeout 5 >NUL&goto experimentalsettings
+:processerror
+cls&echo ^> %npcurrent%&%S%&echo %processunavailable%&%S%&%tryrestartpc%&%L%&%S%&echo %pressany%&timeout 5 >NUL&goto experimentalsettings
 :main
 %R% (%win%%astat%)
 set "npcurrent=Main"
@@ -530,15 +534,23 @@ netsh interface show interface | FIND "Aktiviert" || netsh interface show interf
 if %errorlevel% equ 1 (goto networkrepair2)
 call :finish&goto main
 :networkrepair2
-cls&echo ^> %npcurrent% - %settings%&%S%&echo %startncpa%&%L%&%S%&echo %yes% - %back% - %exit%
-choice /c %ekey%S2%ykey%%bkey%%skey% >NUL
-if %errorlevel% equ 1 goto end
-if %errorlevel% equ 2 goto end
-if %errorlevel% equ 3 goto end
-if %errorlevel% equ 4 ncpa.cpl&goto main
-if %errorlevel% equ 5 goto main
-if %errorlevel% equ 6 call :settings
-goto networkrepair2
+cls&echo ^> %npcurrent%&%S%&echo %startncpa% (%ykey%)&%L%&%S%&set numbers=0&set choices=
+setLocal EnableDelayedExpansion
+for /f "delims== tokens=2*" %%a in ('wmic nic get NetConnectionID /value ^| findstr /r /v "^NetConnectionID=$"') do (set /a numbers+=1&set int!numbers!=%%a&set choices=!choices!!numbers!&echo  !numbers! ^> %%a)
+if !numbers! equ 0 (cls&echo ^> %sshowwifi%&%S%&echo %smissinginterface%&%L%&timeout 5 >NUL&goto system)
+%L%&%S%&echo %back%&%S%
+set /p ifn="> "
+if /i "%ifn%"=="%bkey%" (setLocal DisableDelayedExpansion&goto main)
+if /i "%ifn%"=="%ykey%" (ncpa.cpl&goto networkrepair2)
+echo %ifn%| findstr /r "^[0-9]*$" >NUL
+if %errorlevel% neq 0 (goto networkrepair2)
+if %ifn% gtr !numbers! (goto networkrepair2)
+if %ifn% equ 0 (goto networkrepair2)
+set "iface=!int%ifn%!"
+setLocal DisableDelayedExpansion
+netsh interface set interface "%iface%" enable
+if not %errorlevel% equ 0 (cls&echo ^> %npcurrent%&%S%&echo %tryagainadmin%&%L%&%S%&echo %pressany%&timeout 5 >NUL&goto main)
+set "repairstatus=%successfull%"&call :finish&goto main
 :audiorepair
 if not "%npcurrent%"=="AudioRepair" (set "npcurrent=AudioRepair"&if %adc%==Enabled (if not "%adminswitch%"=="1" (call :nopermission)))
 if %locked% equ 1 (goto main)
@@ -731,7 +743,7 @@ if %errorlevel% equ 3 goto system
 if %errorlevel% equ 4 call :settings
 goto Sshowbiosversion
 :Sshowwifiinfo
-cls&echo ^> %sshowwifi% - %settings%&%S%&echo %schoosewifi%&%L%&%S%&set numbers=0&set choices=
+cls&echo ^> %sshowwifi%&%S%&echo %schoosewifi%&%L%&%S%&set numbers=0&set choices=
 setLocal EnableDelayedExpansion
 for /f "skip=2 tokens=5*" %%a in ('netsh wlan show profiles') do (set /a numbers+=1&set int!numbers!=%%b&set choices=!choices!!numbers!&echo  !numbers! ^> %%b)
 if !numbers! equ 0 (cls&echo ^> %sshowwifi%&%S%&echo %smissinginterface%&%L%&timeout 5 >NUL&goto system)
